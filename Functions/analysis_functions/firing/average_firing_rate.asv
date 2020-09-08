@@ -1,15 +1,25 @@
-function [varargout] = average_firing_Rate(cellid,path,varargin)
+function [varargout] = average_firing_rate(cellid,path,varargin)
 
-% addanalysis(@average_firing_Rate,'property_names',{'CentralPortEpoch'},'mandatory',{'D:\recording'},'arglist',{'type', 'CentralPortEpoch'});
-% addanalysis(@average_firing_Rate,'property_names',{'Total_FR'},'mandatory',{'D:\recording'},'arglist',{'type', 'Total_FR'});
+% addanalysis(@average_firing_Rate,1 'property_names',{'CentralPortEpoch'},'arglist',{'path','D:\recording','type', 'CentralPortEpoch'});
+
+%addanalysis(@average_firing_Rate,1 'property_names',{'Total_FR'},'arglist',{'path','D:\recording','type', 'Total_FR'});
+
 
 %delanalysis(@average_firing_Rate)
 
-prs = inputParser;
-addRequired(prs,'cellid',@(cellid) iscellid((cellid)) || (cellid) == 0)
-addRequired(prs,'path',@ischar) % cell ID
-addParameter(prs,'type','Total_FR',@ischar)
-parse(prs,cellid,path,varargin{:})
+method       = varargin{1};
+
+if (cellid == 0)
+    varargin(1)  = [];
+    varargin     = [varargin{:}];
+    
+    prs = inputParser;
+
+    prs = inputParser;
+    addRequired(prs,'cellid',@(cellid) iscellid((cellid)) || (cellid) == 0)
+    addRequired(prs,'path',@ischar) % cell ID
+    addParameter(prs,'type','Total_FR',@ischar)
+    parse(prs,cellid,path,varargin{:})
 
 if (prs.Results.cellid == 0)
     varargout{1}.prs = prs;

@@ -1,5 +1,5 @@
 %The different functions created by Jesper Hagelskjær
-% average_firing_Rate
+% average_firing_rate
 % cellid2rezFile
 % Choice_and_reward
 % history_reward_choice
@@ -16,7 +16,22 @@
 %if they are not in these variable is not in the TheMatrix you will be
 %asked to run the given script 
 
+%% Average Firing rate in the centerport  - Get_firing_center_port_J_cellbase 
 
+   % add_analysis(@average_firing_rate,1,'property_names',{'CentralPortEpoch','Total_FR'},'arglist',{'path','D:\recording'});
+
+   
+% Calculates the average firing rate of the given neuron in the epoch  
+   
+% input
+%    (1) the path to the recording where the subfolders are each of the recorded animals
+%
+%    property_names ->
+%            CentralPortEpoch           average firing rate in the center port 
+%            Total_FR                   Total average firing of the neuron in the session 
+
+% 'arglist' 
+    % 'path' -> the path to the recording 
 %% IC calculation - IC_refractary_period
     % addanalysis(@IC_refractary_period,'property_names',{'IC_percent'},'arglist',{'refractory_p', 1});
 
@@ -79,26 +94,8 @@
     % Indices_to_erase -> Behavior trials which failed 
        
     
-%% Average Firing rate in the centerport  - Get_firing_center_port_J_cellbase 
 
-   % addanalysis(@average_firing_Rate,'property_names',{'CentralPortEpoch'},'mandatory',{'D:\recording'},'arglist',{'type', 'CentralPortEpoch'});
-
-%NOTE
-% The property_names and the 'type' in arglist must be the same type
-   
-   
-% Calculates the average firing rate of the given neuron in the epoch  
-   
-% input
-%    (1) the path to the recording where the subfolders are each of the recorded animals
-
-% 'arglist' 
-    % 'type' -> 
-    %            CentralPortEpoch (default) average firing rate in the center port 
-    %            Total_FR                   Total average firing of the neuron in the session   
-    
-% output 
-    % firing -> average firing rate (Hz) of the given neuron in the given epoch
+  
     
 %% check the saving of the timestamp of the neurons [CB, rez, TT] - timing_CB_recording
 

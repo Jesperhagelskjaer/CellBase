@@ -70,17 +70,18 @@ check_property_name(Lpropnames,g)
 
 columns = lastcolumn+1:lastcolumn+Lpropnames;  % allocate columns for new properties
 
-%% Execute analysis
-
+%%
+% Execute analysis
+varargin(1:2) = [];
+varargin(logical(strcmp(varargin,'arglist')))   = [];
 name = 0;
-[arglist,range] = modifying_arg_list(CELLIDLIST,varargin{:});
-arglist = [name arglist];
-for cellnum = range %0:size(TheMatrix,1)   % loop through all cells
+for cellnum = 0:size(TheMatrix,1)   % loop through all cells
     if cellnum > 0
         disp(CELLIDLIST{cellnum})
         name = CELLIDLIST{cellnum};
     end
-    arglist{1} = name;
+    arglist = [name varargin];  % input arguments for the analysis
+    
     %try
     [property_values] = feval(funhandle,arglist{:});  % run analysis
     %catch ME
@@ -101,4 +102,11 @@ name_out(Lpropnames,funhandle,cellnum)
 
 % Return changed variables to workspace & save all
 saving_data(TheMatrix,ANALYSES,CELLIDLIST)
+
+%clear global CELLIDLIST ANALYSES TheMatrix
+
+
+
+
+
 

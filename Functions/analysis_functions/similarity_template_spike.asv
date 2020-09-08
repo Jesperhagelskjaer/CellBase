@@ -1,57 +1,68 @@
-function [varargout] = similarity_template_spike(cellid,path,varargin)
+function [varargout] = similarity_template_spike(cellid,varargin)
 
-% add_analysis(@similarity_template_spike,1,'mandatory',{'D:\recording'},'property_names',{'AUC','idx'},'arglist',{'rez','rezFinalK','whitening','y'});
+% add_analysis(@similarity_template_spike,1,'property_names',{'AUC','idx'},'arglist',{'path','D:\recording','rez','rezFinalK','whitening','n'});
 
+% delanalysis(@similarity_template_spike)
 %To Do
 %check up on cluster identity
 global CELLIDLIST
 persistent dataW
+persistent f
+persistent POS_old
 
-idx_p              = find(strcmp(varargin,'property_names'));
-method             = varargin{idx_p+1};
-varargin(idx_p+1)  = [];varargin(idx_p)       = [];
-varargin           = [varargin{:}];
+method       = varargin{1};
 
-prs = inputParser;
-errorMsg = 'Value must be positive, scalar, and numeric.';
-validationFcn = @(x) assert(isnumeric(x) && isscalar(x) && (x > 0),errorMsg);
-
-addRequired(prs,'cellid',@(cellid) iscellid((cellid)) || (cellid) == 0)
-addRequired(prs,'path',@ischar) %
-addParameter(prs,'fshigh',300,validationFcn)
-addParameter(prs,'slow',8000,validationFcn)
-addParameter(prs,'fs',30000,validationFcn)
-addParameter(prs,'rez','rezFinal')
-addParameter(prs,'whitening','n',@ischar)
-addParameter(prs,'NCC_threshold',0.6)
-addParameter(prs,'voltage_threshold',75)
-addParameter(prs,'plotting',0)
-addParameter(prs,'range',[-5:7])
-
-parse(prs,cellid,path,varargin{:})
-g = prs.Results;
-if (g.cellid == 0)
+if (cellid == 0)
+    
+    varargin(1)  = [];
+    varargin     = [varargin{:}];
+    
+    prs = inputParser;
+    errorMsg = 'Value must be positive, scalar, and numeric.';
+    validationFcn = @(x) assert(isnumeric(x) && isscalar(x) && (x > 0),errorMsg);
+    
+    addParameter(prs,'path',@ischar) %
+    addParameter(prs,'fshigh',300,validationFcn)
+    addParameter(prs,'slow',8000,validationFcn)
+    addParameter(prs,'fs',30000,validationFcn)
+    addParameter(prs,'rez','rezFinal')
+    addParameter(prs,'whitening','n',@ischar)
+    addParameter(prs,'NCC_threshold',0.6)
+    addParameter(prs,'voltage_threshold',35)
+    addParameter(prs,'plotting',0)
+    addParameter(prs,'range',[-5:7])
+    
+    parse(prs,varargin{:})
+    f = prs.Results;
+    
     varargout{1}.prs = prs;
     return
 end
 
-[r,s,t,~] = cellid2tags(g.cellid);
-POS = findcellpos_J('animal',r,'session',s); %(!) find faster method
-cluster = findcellstr(CELLIDLIST',g.cellid); % CELLIDLIST must be column vector
-cluster = find(cluster == POS);
+[r,s,~,~] = cellid2tags(cellid);
+POS = findcellpos('animal',r,'session',s); %(!) find faster method
+cluster = find(findcellstr(CELLIDLIST',cellid) == POS); % CELLIDLIST must be column vector
 
-load(fullfile(g.path,r,s,g.rez));
-path = fullfile(g.path,r,s);
+error = 0;
+load_data = 1;
+if all(ismember(POS_old, POS))
+    if isnan(dataW(1,1))
+        error = 1;
+    else
+        load_data = 0;
+    end
+end
+
+
+
+
+load(fullfile(f.path,r,s,f.rez));
+path = fullfile(f.path,r,s);
 Template_all = rez.M_template;
 
 
-error          = 0;
-if cluster ~= 1 && isnan(dataW(1,1))
-    error = 1;
-end
-
-if cluster == 1 || isempty(dataW)
-    [b1, a1] = butter(3, [g.fshigh/g.fs,g.slow/g.fs]*2, 'bandpass');
+if load_data || ~error
+    [b1, a1] = butter(3, [f.fshigh/f.fs,f.slow/f.fs]*2, 'bandpass');
     [channel_start] = find_number_of_files(path)+1; %when channels start with at 17 but the tetrode will start at 1
     i = 1;
     for channel = channel_start:32+channel_start-1
@@ -72,52 +83,51 @@ if cluster == 1 || isempty(dataW)
             i = i + 1;
         end
     end
-    if strcmp(g.whitening,'y')
+    if strcmp(f.whitening,'y')
         [dataW] = whitening_the_data(dataW);
     end
 end
 
 if error
-    AUC  = nan;
-    dataW = nan;
+    AUC     = nan;
+    idx_sim = nan;
+    dataW   = nan;
 else
-    range = [-10:50];
-    Idx = rez.st(logical(rez.st(:,8)==cluster),1);
+    range        = [-10:50];
+    Idx          = rez.st(logical(rez.st(:,8)==cluster),1);
     Template_spk = nan(numel(range),32,numel(Idx));
     
     for i = 1:numel(Idx)
         Template_spk(:,:,i)      = dataW(Idx(i)+range,:);
     end
     
-    Template = mean(Template_spk,3);
+    Template       = mean(Template_spk,3);
     Template_cl    = Template;
-    Template_cl(logical(Template_cl > -g.voltage_threshold & Template_cl < g.voltage_threshold)) = 0;
+    Template_cl(logical(Template_cl > -f.voltage_threshold & Template_cl < f.voltage_threshold)) = 0;
     channals_nzero = any(Template_cl ~= 0);
     tt             = sum(channals_nzero);
     
     main_cl = nan(numel(Idx),sum(channals_nzero));
-    range = [-5:7];
+    range = f.range;
     for i = 1:numel(Idx)
-        main_cl(i,:) = sum((dataW(Idx(i)+range,channals_nzero) - Template_cl(20+range,channals_nzero)).^2);
+        main_cl(i,:) = sum((dataW(Idx(i)+range,channals_nzero) - Template_cl(11+range,channals_nzero)).^2);
     end
     
     sim = nan(size(Template_all,3),1);
     for i = 1:size(Template_all,3)
-        %norm2 = sum(sum(abs(Template(:,:,i))));
-        %sim(i) = max(max(xcorr2(Template(:,:,cluster)/norm1,Template(:,:,i)/norm2)));
-        %sim(i) = max(max(xcorr2(Template(:,:,cluster),Template(:,:,i))));
         sim(i) = max(max(normxcorr2_mex(double(Template_all(:,:,cluster)),double(Template_all(:,:,i)),'full')));
     end
-
-    [idx_sim] = find(sim >= g.NCC_threshold);
+    
+    [idx_sim] = find(sim >= f.NCC_threshold);
     idx_sim(idx_sim == cluster) = [];
     
     AUC = nan(length(idx_sim),1);
+    holder_tem = Template_cl(11+range,channals_nzero);
     for j = 1:length(idx_sim)
         Idx = rez.st(logical(rez.st(:,8)==idx_sim(j)),1);
         score_sub = nan(numel(Idx),sum(channals_nzero));
         for i = 1:numel(Idx)
-            score_sub(i,:) = sum((dataW(Idx(i)+range,channals_nzero) - Template_cl(20+range,channals_nzero)).^2);
+            score_sub(i,:) = sum((dataW(Idx(i)+range,channals_nzero) - holder_tem).^2);
         end
         Labels = [zeros(numel(score_sub(:,1)),1);ones(numel(main_cl(:,1)),1)];
         Data   = [score_sub;main_cl];
@@ -132,7 +142,7 @@ else
         if AUC(j) < 0.9
             b = 2;
         end
-        if g.plotting
+        if f.plotting
             figure
             if tt == 1
                 subplot(2,1,1)
@@ -146,9 +156,9 @@ else
                 scatter(Data(:,1),Data(:,2),1,label)
             elseif tt >= 3 %(!) make better
                 subplot(2,1,1)
-                scatter3(Data(:,1),Data(:,2),Data(:,3),[],Labels)
+                scatter3(Data(:,1),Data(:,2),Data(:,3),1,Labels)
                 subplot(2,1,2)
-                scatter3(Data(:,1),Data(:,2),Data(:,3),[],label)
+                scatter3(Data(:,1),Data(:,2),Data(:,3),1,label)
             end
             figure
             Idx = [cluster; idx_sim];
@@ -165,25 +175,7 @@ end
 
 varargout{1}.AUC = AUC;
 varargout{1}.idx = idx_sim;
+POS_old = POS;
 end
 
-%
-% figure
-% surf(Template_cl)
-%score(i) = sum(dot(dataW(Idx(i)+range,:),Template_cl)); %( make sure on idx
-%score(i,:) = sum(dot(dataW(Idx(i)+range,:)),abs(Template_cl),1)); %( make sure on idx
-%score_t(i,:) = dot(abs(dataW(Idx(i)+range,:)),abs(Template_cl),1); %( make sure on idx
-%score_min(i,:) = min(dataW(Idx(i)+[-5:5],:));
-%score_max(i,:) = max(dataW(Idx(i)+[-2:10],:));
-
-%score2(i) = sum(dot(dataW(Idx(i)+range,:),Template_cl));
-%     score_t = nan(numel(Idx),32);
-%     score_min = nan(numel(Idx),32);
-%     score_max = nan(numel(Idx),32);
-%     holder = score_max - score_min;
-%     Score{j}     = score;
-%     Score_T{j}   = score_t;
-%     Score_min{j} = score_min;
-%     Score_max{j} = score_max;
-%     Score_max_min{j} = holder;
 
