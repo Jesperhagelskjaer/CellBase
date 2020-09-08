@@ -75,7 +75,7 @@ columns = lastcolumn+1:lastcolumn+Lpropnames;  % allocate columns for new proper
 name = 0;
 [arglist,range] = modifying_arg_list(CELLIDLIST,varargin{:});
 arglist = [name arglist];
-for cellnum = range %0:size(TheMatrix,1)   % loop through all cells
+for cellnum = range %
     if cellnum > 0
         disp(CELLIDLIST{cellnum})
         name = CELLIDLIST{cellnum};

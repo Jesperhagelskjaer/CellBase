@@ -1,4 +1,4 @@
-function [p_value Idiff] = tagging_index(cellid,varargin)
+function [p_value, Idiff] = tagging_index(cellid,f)
 %TAGGING_INDEX   Assessment of optic tagging.
 %   [P I] = TAGGING_INDEX(CELLID) calculates information distances and
 %   corresponding p values for light tagging for the cell given in CELLID
@@ -49,22 +49,9 @@ function [p_value Idiff] = tagging_index(cellid,varargin)
 %
 %   See also TAGGING, STIMES2BINRASTER, FILTERTRIALS and JSDIV.
 
-% Default arguments
-prs = inputParser;
-addRequired(prs,'cellid',@iscellid)
-addParamValue(prs,'window',[-0.6 0.6],@(s)isnumeric(s)&isequal(length(s),2))  % time window for bin raster relative to the event, in seconds
-addParamValue(prs,'dt',0.001,@isnumeric)   % time resolution of the binraster, in seconds
-addParamValue(prs,'display',false,@(s)islogical(s)|ismember(s,[0 1]))   % control displaying rasters and PSTHs
-addParamValue(prs,'event','PulseOn',@ischar)   % default reference event: 'PulseOn'
-addParamValue(prs,'event_filter','none',@ischar)   % filter events based on properties
-addParamValue(prs,'filterinput',[])   % some filters need additional input
-addParamValue(prs,'maxtrialno',5000)   % downsample events if more than 'maxtrialno'
-parse(prs,cellid,varargin{:})
-g = prs.Results;
-
 % Set parameters and load CellBase variables
 EventName1 = 'BurstOn';     % for baseline
-EventName2 = g.event;
+EventName2 = f.event;
 ST = loadcb(cellid,'STIMSPIKES');   % load prealigned spikes for stimulation events
 TE = loadcb(cellid,'StimEvents');
 
@@ -76,26 +63,26 @@ if epoch_pos1 == 0 || epoch_pos2 == 0
 end
 stimes1 = ST.event_stimes{epoch_pos1};
 stimes2 = ST.event_stimes{epoch_pos2};
-time = g.window(1):g.dt:g.window(end);
+time = f.window(1):f.dt:f.window(end);
 valid_trials1 = find(~isnan(TE.(EventName1)));
 
 % Spike times for test period - filter events
 valid_trials2 = filterTrials(cellid,'event_type','stim','event',EventName2,...
-    'event_filter',g.event_filter,'filterinput',g.filterinput);
+    'event_filter',f.event_filter,'filterinput',f.filterinput);
 
 % Downsaple if too many pulses
-lm = g.maxtrialno;
+lm = f.maxtrialno;
 if length(valid_trials2) > lm
     rp = randperm(length(valid_trials2));
     valid_trials2 = valid_trials2(sort(rp(1:lm)));
 end
 
 % Calculate bin rasters
-spt1 = stimes2binraster(stimes1(valid_trials1),time,g.dt); %#ok<FNDSB>
-spt2 = stimes2binraster(stimes2(valid_trials2),time,g.dt);
+spt1 = stimes2binraster(stimes1(valid_trials1),time,f.dt); %#ok<FNDSB>
+spt2 = stimes2binraster(stimes2(valid_trials2),time,f.dt);
 
 % Set input arguments for rater plot and PSTH
-if g.display
+if f.display
     SEvent = 'BurstOff';
     FNum = 2;
     parts = 'all';
@@ -126,8 +113,8 @@ end
 
 % Calculate information distances and p values
 res = 10;   % resolution in ms
-dtt = g.dt * 1000;   % resolution of bin raster in ms
-wn = g.window * 1000;   % window boundaries in ms
+dtt = f.dt * 1000;   % resolution of bin raster in ms
+wn = f.window * 1000;   % window boundaries in ms
 [p_value Idiff] = isikldist(spt1,spt2,dtt,wn,res);
 
 % -------------------------------------------------------------------------

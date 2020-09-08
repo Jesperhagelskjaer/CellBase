@@ -2,8 +2,11 @@ function [varargout] = average_firing_rate(cellid,varargin)
 
 
 %add_analysis(@average_firing_rate,1,'property_names',{'CentralPortEpoch','Total_FR'},'arglist',{'path','D:\recording'});
-
+%add_analysis(@average_firing_rate,1,'property_names',{'CentralPortEpoch','Total_FR'},'arglist',{'cells',[1 15 30 45 50]});
+%add_analysis(@average_firing_rate,1,'property_names',{'CentralPortEpoch','Total_FR'});
 %delanalysis(@average_firing_Rate)
+
+
 persistent f
 
 method       = varargin{1};
@@ -13,8 +16,7 @@ if (cellid == 0)
     varargin     = [varargin{:}];
     
     prs = inputParser;
-    
-    addParameter(prs,'path',@ischar) %
+    addParameter(prs,'path',getpref('cellbase').datapath,@ischar) %
     parse(prs,varargin{:})
     
     f = prs.Results;
@@ -22,6 +24,7 @@ if (cellid == 0)
     varargout{1}.prs = prs;
     return
 end
+
 for i = 1:numel(method)
     switch method{i}
         case 'Total_FR'

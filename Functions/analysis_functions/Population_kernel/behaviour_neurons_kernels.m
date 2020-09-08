@@ -1,5 +1,6 @@
-function [varargout] = behaviour_neurons_kernels(cellid)
-% addanalysis(@behaviour_neurons_kernels,'property_names',{'B_trial_neuron','p_trial_neuron'})
+function [varargout] = behaviour_neurons_kernels(cellid,varargin)
+
+% add_analysis(@behaviour_neurons_kernels,0,'property_names',{'B_trial_neuron','p_trial_neuron'})
 
 % delanalysis(@behaviour_neurons_kernels)
 
@@ -7,25 +8,33 @@ function [varargout] = behaviour_neurons_kernels(cellid)
 
 global TheMatrix
 global CELLIDLIST
+persistent f
 
-prs = inputParser;
-addRequired(prs,'cellid',@(cellid) iscellid((cellid)) || (cellid) == 0) % cell ID
-parse(prs,cellid)
+method       = varargin{1};
 
-cellid     = prs.Results.cellid;
-
-if (prs.Results.cellid == 0)
+if (cellid == 0)
+    
+    varargin(1)  = [];
+    varargin     = [varargin{:}];
+    
+    prs = inputParser;
+    addParameter(prs,'loops',100,@(x) isnumeric(x) && iscaler(x) && (x > 0 ))
+    parse(prs,varargin{:})
+    
+    f = prs.Results;
+    
     varargout{1}.prs = prs;
     return
 end
 
+loops      = f.loops;
 idx_neuron = findcellstr(CELLIDLIST',cellid);
 [r,s,~,~] = cellid2tags(cellid);
-POS = findcellpos_J('animal',r,'session',s); %(!) find faster method
+POS = findcellpos('animal',r,'session',s); %(!) find faster method
 Idx2 = findanalysis('Indices_to_erase');
 
 if ~all(Idx2)
-    fprintf("addanalysis(@Choice_and_reward,'property_names',{'CH','RH','Indices_to_erase'},'mandatory',{'D:\recording'})\n")
+    fprintf("addanalysis(@choice_and_reward,1,'property_names',{'CH','RH','Indices_to_erase'})\n")
 else
     remove_index = TheMatrix{POS(1),Idx2};
 end
@@ -34,7 +43,7 @@ if ~isnan(remove_index)
     
     Idx1 = findanalysis(@history_reward_choice);
     if ~all(Idx1)
-        fprintf("addanalysis(@history_reward_choice,'property_names',{'R_trial','C_trial'},'mandatory',{'D:\\recording'},'arglist',{'Trials_back',11,'Time_back', 41,'dt',0.2})\n")
+        fprintf("addanalysis(@history_reward_choice,1,'property_names',{'R_trial','C_trial'})\n")
     else
         [POS1, ~]       = findanalysis('R_trial');
         [POS2, ~]       = findanalysis('C_trial');
@@ -57,7 +66,7 @@ if ~isnan(remove_index)
        
     Idx3 = findanalysis('CentralPortEpoch');
     if ~all(Idx3)
-        fprintf("addanalysis(@average_firing_Rate,'property_names',{'CentralPortEpoch'},'mandatory',{'D:\recording'},'arglist',{'type', 'CentralPortEpoch'});\n")
+        fprintf("addanalysis(@average_firing_rate,1,'property_names',{'CentralPortEpoch'})\n")
     elseif isnan(remove_index)
         %will check for error in behavior -> will not create firing
     else
@@ -66,6 +75,7 @@ if ~isnan(remove_index)
     end
 end
 
+B_trial_neuron = nan;p_trial_neuron = nan;
 if exist('Firing','var') && length(Firing) == size(R,1)
     % %IMPORTANT
     R = [double(R == 1) double(R == -1)];
@@ -77,14 +87,17 @@ if exist('Firing','var') && length(Firing) == size(R,1)
         B_trial_neuron = nan(size(F,1),31);
         p_trial_neuron = nan(size(F,1),31);
     else
-        [B_trial_neuron, p_trial_neuron] = elasticnet_parallel_loops_J(F, R, C);
+        [B_trial_neuron, p_trial_neuron] = elasticnet_parallel_loops_J(F, R, C,loops);
     end
-else
-    B_trial_neuron = nan;
-    p_trial_neuron = nan;
 end
+
 
 varargout{1}.B_trial_neuron = B_trial_neuron;
 varargout{1}.p_trial_neuron = p_trial_neuron;
 
 end
+
+
+
+
+

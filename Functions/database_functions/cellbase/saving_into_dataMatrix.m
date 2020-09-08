@@ -2,7 +2,6 @@ function [TheMatrix] = saving_into_dataMatrix(TheMatrix,Lpropnames,property_valu
 
 for i = 1:Lpropnames %(!)
     holder{i} = property_values.(g.property_names{i});
-    %struct2cell(property_values)
 end
 if (g.add == 1)
     TheMatrix(cellnum,columns) = holder;
