@@ -1,11 +1,12 @@
 function [varargout] = similarity_template_spike(cellid,varargin)
 
-% add_analysis(@similarity_template_spike,1,'property_names',{'AUC','idx'},'arglist',{'path','D:\recording','rez','rezFinalK','whitening','n'});
+% add_analysis(@similarity_template_spike,0,'property_names',{'AUC','idx'},'arglist',{'rez','rezFinalK','whitening','n'});
 
 % delanalysis(@similarity_template_spike)
 %To Do
 %check up on cluster identity
 global CELLIDLIST
+global TheMatrix
 persistent dataW
 persistent f
 persistent POS_old
@@ -21,7 +22,7 @@ if (cellid == 0)
     errorMsg = 'Value must be positive, scalar, and numeric.';
     validationFcn = @(x) assert(isnumeric(x) && isscalar(x) && (x > 0),errorMsg);
     
-    addParameter(prs,'path',@ischar) %
+    addParameter(prs,'path',getpref('cellbase').datapath,@ischar) %
     addParameter(prs,'fshigh',300,validationFcn)
     addParameter(prs,'slow',8000,validationFcn)
     addParameter(prs,'fs',30000,validationFcn)
@@ -41,7 +42,7 @@ end
 
 [r,s,~,~] = cellid2tags(cellid);
 POS = findcellpos('animal',r,'session',s); %(!) find faster method
-cluster = find(findcellstr(CELLIDLIST',cellid) == POS); % CELLIDLIST must be column vector
+%cluster = find(findcellstr(CELLIDLIST',cellid) == POS); % CELLIDLIST must be column vector
 
 error = 0;
 load_data = 1;
@@ -51,6 +52,15 @@ if all(ismember(POS_old, POS)) && ~isempty(dataW)
     else
         load_data = 0;
     end
+end
+
+
+Idx = findanalysis(@cellid2rezFile);
+if ~all(Idx)
+    fprintf("add_analysis(@cellid2rezFile,1,'property_names',{'ID'},'arglist',{'name','rezFinalK'})\n")
+else
+    idx_neuron = findcellstr(CELLIDLIST',cellid);
+    cluster = TheMatrix{idx_neuron,Idx};
 end
 
 load(fullfile(f.path,r,s,f.rez));

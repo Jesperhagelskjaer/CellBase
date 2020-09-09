@@ -1,5 +1,4 @@
-function [arg_list,range] = modifying_arg_list(CELLIDLIST,varargin)
-
+function [arg_list,range] = modifying_arg_list(g,CELLIDLIST,varargin)
 
 data_PN = varargin(find(strcmp(varargin,'property_names'))+1);
 
@@ -17,6 +16,7 @@ if any(idx)
 else
     range = 0:numel(CELLIDLIST);
 end
+
 arg_list{1} = data_PN{:};
 arg_list{2} = data_AL;
 

@@ -1,5 +1,6 @@
 function [varargout] = Baiting(cellid,varargin)
-%add_analysis(@Baiting,'property_names',1,{'BaitingFactor'})
+
+%add_analysis(@Baiting,0,'property_names',{'BaitingFactor'})
 
 %delanalysis(@Baiting)
 
@@ -23,11 +24,16 @@ if (cellid == 0)
     return
 end
 
+
 TE = loadcb(cellid,'TrialEvents');
-if length(unique(TE.BaitingFactor)) > 1
-    BaitingFactor = unique(TE.BaitingFactor);
-else
-    BaitingFactor = ones(1,3)*unique(TE.BaitingFactor);
+
+BaitingFactor = nan;
+if isfield(TE,'BaitingFactor')
+    if length(unique(TE.BaitingFactor)) > 1
+        BaitingFactor = unique(TE.BaitingFactor);
+    else
+        BaitingFactor = ones(1,3)*unique(TE.BaitingFactor);
+    end
 end
 
 varargout{1}.BaitingFactor = BaitingFactor;

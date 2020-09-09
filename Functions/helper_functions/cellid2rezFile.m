@@ -2,8 +2,6 @@ function [varargout] = cellid2rezFile(cellid,varargin)
 
 %add_analysis(@cellid2rezFile,1,'property_names',{'ID'},'arglist',{'name','rezFinalK'})
 
-%addanalysis(@cellid2rezFile,'property_names',{'ID'},'mandatory',{'D:/recording','rezFinalK'})
-
 persistent f
 
 method       = varargin{1};

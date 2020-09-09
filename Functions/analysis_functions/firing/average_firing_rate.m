@@ -4,8 +4,7 @@ function [varargout] = average_firing_rate(cellid,varargin)
 %add_analysis(@average_firing_rate,1,'property_names',{'CentralPortEpoch','Total_FR'},'arglist',{'path','D:\recording'});
 %add_analysis(@average_firing_rate,0,'property_names',{'CentralPortEpoch','Total_FR'},'arglist',{'cells',[1 15 30 45 50]});
 %add_analysis(@average_firing_rate,0,'property_names',{'CentralPortEpoch','Total_FR'});
-%delanalysis(@average_firing_Rate)
-
+%delanalysis(@average_firing_rate)
 
 persistent f
 

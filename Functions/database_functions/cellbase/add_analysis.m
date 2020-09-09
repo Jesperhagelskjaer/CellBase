@@ -5,38 +5,12 @@ function  add_analysis(funhandle,varargin)
 %   by FUNHANDLE on the cells included in CellBase. Note that the analysis
 %   specified by FUNHANDLE should take a cell ID as its first input
 %   argument.
-%
-%   ADDANALYSIS(FUNHANDLE,'PROPERTY_NAMES',PR) passes the list of property
-%   names (PR, cell array of strings) to ADDANALYSIS. The property name
-%   'default' is used if no property names are specified. The first N
-%   outputs of the analysis function are used, where N is the number of
-%   inserted properties (length of PR).
-%
-%   ADDANALYSIS(FUNHANDLE,'PROPERTY_NAMES',PR,'OUTPUT_SUBSET',OS) passes
-%   the list of property names (PR, cell array of strings) to ADDANALYSIS.
-%   The additional input argument OS determines which outputs of the
-%   analysis function are included. OS should be a numerical array indexing
-%   into the output argument list of the analysis function (integers
-%   between 1 and the number of FUNHANDLE output arguments - see NARGOUT).
-%   The length of OS should match the number of inserted properties (i.e.
-%   the length of PR).
-%
-%   ADDANALYSIS(FUNHANDLE,'PROPERTY_NAMES',PR,'OUTPUT_SUBSET',OS,'MANDATORY',ARGM,'ARGLIST',ARGVAL)
-%   also passes input arguments to FUNHANDLE. Mandatory arguments should be
-%   passed in ARGM and parameter-value pairs should be specified in ARGVAL
-%   (N-by-2 cell array). These are be passed on to the analysis function.
-%
+
+
 %   Examples:
-%   addanalysis(@LRatio2,'property_names',{'ID_PC','Lr_PC'},'arglist',{'fea
-%   ture_names' {'WavePC1' 'Energy'}})
-%
-%   addanalysis(@ultimate_psth,...
-%   'mandatory',{'trial' @findAlignEvent_negfeedback_gonogo [-0.6 0.6]},...
-%   'property_names',{'FA_psth' 'FA_psth_stats'},'output_subset',[1 6],...
-%   'arglist',{'dt',0.001;'display',false;'sigma',0.02;'parts','all';'isadaptive',2;...
-%   'event_filter','custom';'filterinput','FalseAlarm==1';'maxtrialno',Inf;...
-%   'baselinewin',[-0.5 0];'testwin',[0 0.5];'relative_threshold',0.1});
-%
+%   add_analysis(@LRatio2,1,'property_names',{'ID_PC','Lr_PC'},'arglist',{'cells',[1 5 500]})
+
+
 %   See also FINDANALYSIS.
 
 %   Edit log: JH 2020/09/08
@@ -59,28 +33,18 @@ load(getpref('cellbase','fname'));
 
 Lpropnames = length(g.property_names);   % number of property names
 
-% Is there an identical analysis already?
-check_analysis(funhandle,ANALYSES,g)
-
-% Is there an identical property name?
-check_property_name(Lpropnames,g)
-
-% Find the position for the new analysis
-[lastcolumn,NewAnal] = columns_idx(ANALYSES,CELLIDLIST,TheMatrix);
-
-columns = lastcolumn+1:lastcolumn+Lpropnames;  % allocate columns for new properties
+[NewAnal,columns] = check_main(funhandle,ANALYSES,Lpropnames,CELLIDLIST,TheMatrix,g);
 
 %% Execute analysis
 
-name = 0;
-[arglist,range] = modifying_arg_list(CELLIDLIST,varargin{:});
-arglist = [name arglist];
+[arglist,range] = modifying_arg_list(g,CELLIDLIST,varargin{:});
+arglist = [0 arglist];
 for cellnum = range %
     if cellnum > 0
         disp(CELLIDLIST{cellnum})
-        name = CELLIDLIST{cellnum};
+        arglist{1} = CELLIDLIST{cellnum};
     end
-    arglist{1} = name;
+    
     %try
     [property_values] = feval(funhandle,arglist{:});  % run analysis
     %catch ME
@@ -88,17 +52,25 @@ for cellnum = range %
     %    disp('ADDANALYSIS: Error while executing the analysis function. Adding NaNs.')
     %    property_values = num2cell(nan(1,nout));   % if there is a error in execution, insert a NaN
     %end
-    
-    if (cellnum == 0)
-        [ANALYSES] = adding_analysis(ANALYSES,funhandle,g,columns,property_values,NewAnal);
+    if (cellnum  ~= 0)
+        for i = 1:Lpropnames %(!)
+            holder{i} = property_values.(g.property_names{i});
+        end
     else
-        [TheMatrix] = saving_into_dataMatrix(TheMatrix,Lpropnames,property_values,g,cellnum,columns);   
+        prs_value = property_values;
+    end
+       
+    if (cellnum ~= 0 && g.add == 1)
+        TheMatrix(cellnum,columns) = holder;
+    elseif (cellnum  ~= 0 && g.add == 0)
+        print_value(Lpropnames,holder,g)
     end
 end
 
 % Feedback
-name_out(Lpropnames,funhandle,cellnum)
+name_out(Lpropnames,funhandle,cellnum,g)
 
+[ANALYSES] = adding_analysis(ANALYSES,funhandle,g,columns,prs_value,NewAnal);
 % Return changed variables to workspace & save all
-saving_data(TheMatrix,ANALYSES,CELLIDLIST)
+saving_data(g,TheMatrix,ANALYSES,CELLIDLIST)
 
