@@ -22,7 +22,7 @@
 
 %e.g.
     
-%arglist -> name-pairs 
+%arglist -> name_pairs 
 %     'cells' - [1 5 7 100] run the analysis on the given idx of the cells e.g. add_analysis(function hanel,add_to_matrix,'property_names',{names_of_output variable},'arglist',{'cells',)
 
 %% Average Firing rate in the centerport  - Get_firing_center_port_J_cellbase 

@@ -56,7 +56,7 @@ if ~isnan(remove_index)
     
     Idx1 = findanalysis(@Choice_and_reward);
     if ~all(Idx1)
-        fprintf("addanalysis(@Choice_and_reward,'property_names',{'CH','RH','Indices_to_erase'},'mandatory',{'D:\\recording'})\n")
+        fprintf("addanalysis(@choice_and_reward,1,'property_names',{'CH','RH','Indices_to_erase'})\n")
     else
         [POS1, ~]       = findanalysis('CH');
         C_current_trial = TheMatrix{POS(1),POS1};
@@ -87,7 +87,7 @@ if exist('Firing','var') && length(Firing) == size(R,1)
         B_trial_neuron = nan(size(F,1),31);
         p_trial_neuron = nan(size(F,1),31);
     else
-        [B_trial_neuron, p_trial_neuron] = elasticnet_parallel_loops_J(F, R, C,loops);
+        [B_trial_neuron, p_trial_neuron] = lasso_regression(F, R, C,loops);
     end
 end
 

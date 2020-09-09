@@ -7,9 +7,14 @@ if (g.add == 1)
     TheMatrix(cellnum,columns) = holder;
 else
     for i = 1:Lpropnames %(!)
-        fprintf('%s: %f\n',g.property_names{i}, holder{i})    % (create a print function)
+        for j = 1:numel(holder{i})
+            fprintf('%s\n',g.property_names{i}+ ": " + num2str(holder{i}(j)))
+        end
     end
 end
+
+
+
 
 end
 
