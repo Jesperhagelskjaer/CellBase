@@ -1,7 +1,6 @@
 function [varargout] = similarity_template_spike(cellid,varargin)
 
 % add_analysis(@similarity_template_spike,1,'property_names',{'AUC','idx'},'arglist',{'rez','rezFinalK','whitening','n','method','mnr'});
-
 % add_analysis(@similarity_template_spike,0,'property_names',{'AUC','idx'},'arglist',{'rez','rezFinalK','whitening','n','cells',[250]});
 % delanalysis(@similarity_template_spike)
 %To Do
@@ -146,15 +145,23 @@ else
             % cl = fitcsvm(Data,Labels,'KernelFunction','rbf','BoxConstraint',Inf,'OutlierFraction',0.01);
             % cl = fitcsvm(Data,Labels,'KernelFunction','linear','BoxConstraint',Inf,'OutlierFraction',0.01);
             if strcmpi(f.method,'svm')
+
                 cl = fitcsvm(Data,Labels,'KernelFunction','linear','OutlierFraction',0.01,'Standardize','on');
                 [label,score] = predict(cl,Data);
+                [~,~,~,AUC1] = perfcurve(Labels,score(:,1),'0')
+
             elseif strcmpi(f.method,'mnr')
+                tic
                 Data = zscore(Data);
                 [b,~,~] = mnrfit(Data,categorical(Labels),'model','hierarchical');
                 label = zeros(size(Data,1),1);
                 score = ones(size(Data,1),1)*b(1);
-                score = exp(sum(score + b(2:end)'.*Data(:,:),2));
+                for mn = 1:numel(b)-1
+                    score = score + b(mn+1)*Data(:,mn);
+                end
+                score = exp(score);
                 label(logical(score > 1)) = 1;
+                toc
             end
             [~,~,~,AUC(j)] = perfcurve(Labels,score(:,1),'0');
             if f.plotting
