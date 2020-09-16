@@ -6,10 +6,8 @@ function  add_analysis(funhandle,varargin)
 %   specified by FUNHANDLE should take a cell ID as its first input
 %   argument.
 
-
 %   Examples:
-%   add_analysis(@LRatio2,1,'property_names',{'ID_PC','Lr_PC'},'arglist',{'cells',[1 5 500]})
-
+%   add_analysis(@average_firing_rate,1,'property_names',{'CentralPortEpoch','Total_FR'},'arglist',{'cells',[1 5 500]})
 
 %   See also FINDANALYSIS.
 

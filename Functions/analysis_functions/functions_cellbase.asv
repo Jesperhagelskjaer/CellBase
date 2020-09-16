@@ -42,10 +42,11 @@
 %use the binary lassoGLM
 
     % add_analysis(@behavior_kernels,0,'property_names',{'B_trial_behaviour'},'arglist',{'data',{'choice','reward','no_reward'}})
+
     
     % 'arglist'
-    % choice -> The choice kernel (reference C_left) fitting C_left
-    % reward -> The reward kernel (reference R_left) fitting R_left
+    % choice  -> use the choise for the kernal (reference C_left) fitting
+    %C_left
 
 %% Calculate the reward and choice coefficient for the behaviour 
  

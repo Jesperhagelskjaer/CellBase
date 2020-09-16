@@ -1,8 +1,10 @@
 function [varargout] = choice_and_reward(cellid,varargin)
 
+%   Examples:
 %add_analysis(@choice_and_reward,1,'property_names',{'CH','RH','Indices_to_erase'})
 %add_analysis(@choice_and_reward,1,'property_names',{'CH','RH','Indices_to_erase'},'arglist',{'cells',[1 15 30 45 50]});
 %add_analysis(@choice_and_reward,0,'property_names',{'CH','RH'},'arglist',{'cells',{'D:\recording'})
+%add_analysis(@choice_and_reward,0,'property_names',{'Indices_to_erase'})
 
 %delanalysis(@choice_and_reward)
 
@@ -43,18 +45,18 @@ if number_files == 1 %if multiple behavior files is not possible to find out whi
     if ~(strcmp(r,r2) && strcmp(s,s2))
         TE = loadcb(cellid,'TrialEvents');
         [RH, CH, Indices_to_erase] = Collect_Reward_Choice_History(TE);
-        varargout{1}.RH               = single(RH);
-        varargout{1}.CH               = single(CH);
-        varargout{1}.Indices_to_erase = single(Indices_to_erase);
     else
-        varargout{1}.RH               = [];
-        varargout{1}.CH               = [];
-        varargout{1}.Indices_to_erase = [];
+        RH               = [];
+        CH               = [];
+        Indices_to_erase = [];
     end
 else
-    varargout{1}.RH               = nan;
-    varargout{1}.CH               = nan;
-    varargout{1}.Indices_to_erase = nan;
+    RH               = nan;
+    CH               = nan;
+    Indices_to_erase = nan;
 end
-
+varargout{1}.RH = RH;
+varargout{1}.CH = CH;
+varargout{1}.Indices_to_erase = Indices_to_erase;
+end
 

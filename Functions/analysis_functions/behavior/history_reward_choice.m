@@ -1,7 +1,7 @@
 function [varargout] = history_reward_choice(cellid,varargin)
-
+%   Examples:
 % add_analysis(@history_reward_choice,1,'property_names',{'R_trial','C_trial'},'arglist',{'Trials_back',11})
-
+% add_analysis(@history_reward_choice,0,'property_names',{'R_trial','C_trial'},'arglist',{'Trials_back',11})
 % delanalysis(@history_reward_choice)
 
 % created (JH) 2020-07-19
@@ -50,12 +50,10 @@ if (behavior_session == 1) && ~isnan(status)
     
     Idx = findanalysis(@choice_and_reward);
     if ~all(Idx)
-        fprintf("addanalysis(cChoice_and_reward,'property_names',{'CH','RH','Indices_to_erase'})\n")
+        fprintf("addanalysis(@Choice_and_reward,'property_names',{'CH','RH'})\n")
     else
-        [POS1, ~] = findanalysis('CH');
-        [POS2, ~] = findanalysis('RH');
-        CH = TheMatrix{POS(1),POS1};
-        RH = TheMatrix{POS(1),POS2};
+        CH = TheMatrix{POS(1),findanalysis('CH')};
+        RH = TheMatrix{POS(1),findanalysis('RH')};
     end
     [~, ~, ~, CenterPortExit, ~, ~] = GET_TRIAL_EVENTS_FROM_FILE_EXTENDED(path_rat); %(!)
     if isempty(RH)
@@ -70,17 +68,12 @@ if isnan(status) || behavior_session ~= 1
     C_trial        = nan;
 elseif status == 0
     CH(isnan(CH))             = []; %check up on (JH)
-    RH(isnan(CH))             = []; %check up on (JH)
+    RH(isnan(RH))             = []; %check up on (JH)
     
     % TRIALS
     [R_R, R_L, C_R, C_L] = Get_history_matrices(RH, CH, Trials_back);
-    R_pred = R_R - R_L;
-    C_pred = C_R - C_L;
-    
-    R_pred(1, :) = [];
-    C_pred(1, :) = [];
-    R_trial        = single(R_pred');
-    C_trial        = single(C_pred');
+    R_trial = (R_R - R_L)';
+    C_trial = (C_R - C_L)';
 elseif status == 1
     R_trial        = [];
     C_trial        = [];
