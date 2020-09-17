@@ -25,7 +25,7 @@
 %arglist -> name-pairs 
 %     'cells' - [1 5 7 100] run the analysis on the given idx of the cells e.g. add_analysis(function hanel,add_to_matrix,'property_names',{names_of_output variable},'arglist',{'cells',)
 
-%% Average Firing rate in the centerport  
+%% Average Firing rate in the centerport  - Get_firing_center_port_J_cellbase 
 
    % add_analysis(@average_firing_rate,1,'property_names',{'CentralPortEpoch','Total_FR'});
 
@@ -45,16 +45,7 @@
 
 
 %add_analysis(@Baiting,'property_names',1,{'BaitingFactor'})    
-
-%% Calculate the kernal for the behaviour behavior_kernels
-
-%use the binary lassoGLM
-
-    % add_analysis(@behavior_kernels,0,'property_names',{'B_trial_behaviour'},'arglist',{'data',{'choice','reward','no_reward'}})
     
-    % 'arglist'
-    % choice -> The choice kernel (reference C_left) fitting C_left
-    % reward -> The reward kernel (reference R_left) fitting R_left    
     
     
 %% add_analysis(@behaviour_neurons_kernels,1,'property_names',{'B_trial_neuron','p_trial_neuron'})    

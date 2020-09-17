@@ -1,17 +1,15 @@
-function [B_all, p_all] = lasso_regression(Firing, R, C,loops)
+function [B_all, p_all] = lasso_regression(Firing, X,loops)
 
-X = [R C];
 B_temp = zeros(loops, size(X, 2));
 
 parfor j = 1:loops % PARALLEL
-    [B, FitInfo] = lasso(X,Firing, 'CV', 4, 'Alpha', 0.5, 'MaxIter', 1e3, 'Options',statset('UseParallel',true) );
+    [B, FitInfo] = lasso(X,Firing, 'CV', 2, 'Alpha', 0.5, 'MaxIter', 1e3, 'Options',statset('UseParallel',true) ); %CV 4
     B_temp(j, :) = B(:, FitInfo.IndexMinMSE);
 end
 
 B_all = mean(B_temp);
-% std_v = std(B_temp);
-% figure
-% errorbar(B_all,std_v)
+figure
+errorbar(B_all,std(B_temp))
 
 p_all   = zeros(1, size(X, 2));
 
