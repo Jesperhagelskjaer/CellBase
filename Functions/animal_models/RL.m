@@ -116,13 +116,14 @@ a_left         = (chosen_opt == 1 );
 no_reward_left  = no_reward(1,:)';
 no_reward_right = no_reward(2,:)';
 no_reward     = ones(numel(reward_left),1)-reward_left-reward_right;
+all_reward    = reward_left + reward_right;
 
-%condition = {'reward_right',1,3,2;...      %name,condition(0/1),trial_lag,increase_firing
-%             'reward_left', 1,3,3;};
+condition = {'reward_right',1,3,2;...      %name,condition(0/1),trial_lag,increase_firing
+             'reward_left', 1,4,3;};
 %condition = {'no_reward',1,3,2};      %name,condition(0/1),trial_lag,increase_firing
 %condition = {'reward_right',1,3,2};      %name,condition(0/1),trial_lag,increase_firing         
 %condition = {'reward_left',1,3,2};          
-condition  = {'no_reward_right',1,3,2};
+%condition  = {'no_reward_right',1,3,2};
 
 Firing(:) = firing;
 for c = 1:size(condition,1)
@@ -135,8 +136,9 @@ for c = 1:size(condition,1)
         end
     end
 end
-
-Firing(end-trial_lag+1:end)  = [];
+t1 = size(reward_left,1);
+t2 = size(Firing,1);
+Firing(end-(t2-t1)+1:end)  = [];
 
 reward_left_his  = reward_left;
 reward_right_his = reward_right;
@@ -145,8 +147,7 @@ a_right_his      = double(a_right);
 a_left_his       = double(a_left);
 no_reward_left_his  = double(no_reward_left);
 no_reward_right_his = double(no_reward_right);
-
-
+all_reward_his = all_reward;
 for i = 2:Trials_back
     reward_left_his(:,i)  = circshift(reward_left',  [0, i-1]);
     reward_right_his(:,i) = circshift(reward_right', [0, i-1]);
@@ -155,6 +156,7 @@ for i = 2:Trials_back
     non_reward_his(:,i)   = circshift(no_reward',    [0, i-1]);
     no_reward_left_his(:,i)  = circshift(no_reward_left',       [0, i-1]);
     no_reward_right_his(:,i) = circshift(no_reward_right',    [0, i-1]);
+    all_reward_his(:,i)          =  circshift(all_reward',    [0, i-1]);
 end
 
 idx = 1:Trials_back:7*11;
@@ -237,17 +239,50 @@ hold on
 plot(idx,[0 0 0 0 0 0 0],'*')
 title('a l - a r - reward left - reward right - no reward left - no reward right - no reward')
 
-C = a_left_his;
-R = [reward_left_his  reward_right_his];
+% data = [a_right_his a_left_his reward_left_his reward_right_his no_reward_left_his no_reward_right_his];
+% [B,FitInfo] = lasso(data,Firing,'CV',4);
+% %lassoPlot(B,FitInfo,'PlotType','CV');
+% %legend('show') % Show legend
+% B = B(:,FitInfo.IndexMinMSE);
+% subplot(3,3,7)
+% plot(B)
+% hold on
+% plot(idx,[0 0 0 0 0 0 0],'*')
+% title('a l - a r - reward left - reward right - no reward left - no reward right')
 
-    % Compute regression kernels
-X_data = [C R];
-[B, FitInfo] = lasso(X_data, Firing, 'CV', 4);
+data = [a_right_his a_left_his reward_left_his reward_right_his no_reward_left_his no_reward_right_his all_reward_his];
+[B,FitInfo] = lasso(data,Firing,'CV',4);
+%lassoPlot(B,FitInfo,'PlotType','CV');
+%legend('show') % Show legend
 B = B(:,FitInfo.IndexMinMSE);
 subplot(3,3,8)
 plot(B)
 hold on
 plot(idx,[0 0 0 0 0 0 0],'*')
-title('Junior - a left - reward left - reward right')
+title('a l - a r - reward left - reward right - no reward left - no reward right - all reward')
 
+
+% C = a_left_his;
+% R = [reward_left_his  reward_right_his];
+% 
+%     % Compute regression kernels
+% X_data = [C R];
+% [B, FitInfo] = lasso(X_data, Firing, 'CV', 4);
+% B = B(:,FitInfo.IndexMinMSE);
+% subplot(3,3,8)
+% plot(B)
+% hold on
+
+
+
+
+% plot(idx,[0 0 0 0 0 0 0],'*')
+% title('Junior mod - a left - reward left - reward right')
+% [B, FitInfo] = lasso(X_data, Firing,'CV', 4, 'Alpha', 0.5, 'MaxIter', 1e3, 'Options',statset('UseParallel',false));
+% B = B(:,FitInfo.IndexMinMSE);
+% subplot(3,3,9)
+% plot(B)
+% hold on
+% plot(idx,[0 0 0 0 0 0 0],'*')
+% title('Junior - a left - reward left - reward right')
 
