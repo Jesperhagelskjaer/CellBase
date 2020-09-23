@@ -11,7 +11,6 @@ nrepeats       = 3;
 count_a        = 2;
 count_b        = 2;
 
-
 model_name     = 'baiting';   % block_length  /  baiting
 
 trials_block = repmat(1:types,1,nrepeats);
@@ -118,19 +117,30 @@ no_reward_right = no_reward(2,:)';
 no_reward     = ones(numel(reward_left),1)-reward_left-reward_right;
 all_reward    = reward_left + reward_right;
 
-condition = {'reward_right',1,3,2;...      %name,condition(0/1),trial_lag,increase_firing
-             'reward_left', 1,4,3;};
+%condition = {'reward_right',1,3,2;...      %name,condition(0/1),trial_lag,increase_firing
+%    'reward_left', 1,4,3;};
+%condition = {'reward_right',1,3,2;...      %name,condition(0/1),trial_lag,increase_firing
+%    'reward_left', 1,4,3;};
+
+%condition = {'a_right',1,3,2;...      %name,condition(0/1),trial_lag,increase_firing
+%    'a_left', 1,4,3;};
+
+%condition = {'a_right',1,3,2;...      %name,condition(0/1),trial_lag,increase_firing
+%    'a_left', 1,4,3;};
+
+
+
 %condition = {'no_reward',1,3,2};      %name,condition(0/1),trial_lag,increase_firing
-%condition = {'reward_right',1,3,2};      %name,condition(0/1),trial_lag,increase_firing         
-%condition = {'reward_left',1,3,2};          
-%condition  = {'no_reward_right',1,3,2};
+%condition = {'reward_right',1,3,2};      %name,condition(0/1),trial_lag,increase_firing
+%condition = {'reward_left',1,3,2};
+condition  = {'no_reward_right',1,3,2};
 
 Firing(:) = firing;
 for c = 1:size(condition,1)
     value     = eval(condition{c,1}) == condition{c,2};
     trial_lag = condition{c,3};
     incrase_f = condition{c,4};
-    for t = 1:nTrial   
+    for t = 1:nTrial
         if value(t) == 1
             Firing(t+trial_lag) = firing*incrase_f+rand*increase_noice;
         end
@@ -195,40 +205,7 @@ hold on
 plot(idx,[0 0 0 0 0 0 0],'*')
 title('a left - reward left - no reward')
 
-data = [a_left_his reward_left_his];
-[B,FitInfo] = lasso(data,Firing,'CV',4);
-% lassoPlot(B,FitInfo,'PlotType','CV');
-% legend('show') % Show legend
-B = B(:,FitInfo.IndexMinMSE);
-subplot(3,3,4)
-plot(B)
-hold on
-plot(idx,[0 0 0 0 0 0 0],'*')
-title('a left - reward left')
-
-data = [reward_left_his reward_right_his];
-[B,FitInfo] = lasso(data,Firing,'CV',4);
-% lassoPlot(B,FitInfo,'PlotType','CV');
-% legend('show') % Show legend
-B = B(:,FitInfo.IndexMinMSE);
-subplot(3,3,5)
-plot(B)
-hold on
-plot(idx,[0 0 0 0 0 0 0],'*')
-title('reward left - reward right')
-
-data = non_reward_his;
-[B,FitInfo] = lasso(data,Firing,'CV',4);
-%lassoPlot(B,FitInfo,'PlotType','CV');
-%legend('show') % Show legend
-B = B(:,FitInfo.IndexMinMSE);
-subplot(3,3,6)
-plot(B)
-hold on
-plot(idx,[0 0 0 0 0 0 0],'*')
-title('no reward')
-
-data = [a_right_his a_left_his reward_left_his reward_right_his no_reward_left_his no_reward_right_his non_reward_his];
+data = [a_left_his reward_left_his reward_right_his no_reward_left_his no_reward_right_his non_reward_his];
 [B,FitInfo] = lasso(data,Firing,'CV',4);
 %lassoPlot(B,FitInfo,'PlotType','CV');
 %legend('show') % Show legend
@@ -237,18 +214,7 @@ subplot(3,3,7)
 plot(B)
 hold on
 plot(idx,[0 0 0 0 0 0 0],'*')
-title('a l - a r - reward left - reward right - no reward left - no reward right - no reward')
-
-% data = [a_right_his a_left_his reward_left_his reward_right_his no_reward_left_his no_reward_right_his];
-% [B,FitInfo] = lasso(data,Firing,'CV',4);
-% %lassoPlot(B,FitInfo,'PlotType','CV');
-% %legend('show') % Show legend
-% B = B(:,FitInfo.IndexMinMSE);
-% subplot(3,3,7)
-% plot(B)
-% hold on
-% plot(idx,[0 0 0 0 0 0 0],'*')
-% title('a l - a r - reward left - reward right - no reward left - no reward right')
+title('a l - reward left - reward right - no reward left - no reward right - no reward')
 
 data = [a_right_his a_left_his reward_left_his reward_right_his no_reward_left_his no_reward_right_his all_reward_his];
 [B,FitInfo] = lasso(data,Firing,'CV',4);
@@ -261,28 +227,16 @@ hold on
 plot(idx,[0 0 0 0 0 0 0],'*')
 title('a l - a r - reward left - reward right - no reward left - no reward right - all reward')
 
-
-% C = a_left_his;
-% R = [reward_left_his  reward_right_his];
-% 
-%     % Compute regression kernels
-% X_data = [C R];
-% [B, FitInfo] = lasso(X_data, Firing, 'CV', 4);
-% B = B(:,FitInfo.IndexMinMSE);
-% subplot(3,3,8)
-% plot(B)
-% hold on
-
+data = [a_left_his reward_left_his reward_right_his];
+[B,FitInfo] = lasso(data,Firing,'CV',4);
+% lassoPlot(B,FitInfo,'PlotType','CV');
+% legend('show') % Show legend
+B = B(:,FitInfo.IndexMinMSE);
+subplot(3,3,9)
+plot(B)
+hold on
+plot(idx,[0 0 0 0 0 0 0],'*')
+title('a left - reward left - reward right')
 
 
-
-% plot(idx,[0 0 0 0 0 0 0],'*')
-% title('Junior mod - a left - reward left - reward right')
-% [B, FitInfo] = lasso(X_data, Firing,'CV', 4, 'Alpha', 0.5, 'MaxIter', 1e3, 'Options',statset('UseParallel',false));
-% B = B(:,FitInfo.IndexMinMSE);
-% subplot(3,3,9)
-% plot(B)
-% hold on
-% plot(idx,[0 0 0 0 0 0 0],'*')
-% title('Junior - a left - reward left - reward right')
 
