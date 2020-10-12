@@ -74,7 +74,6 @@ else
 
 end
 
-
 varargout{1}.B_trial_behaviour = B;
 end
 

@@ -35,7 +35,7 @@ Lpropnames = length(g.property_names);   % number of property names
 
 %% Execute analysis
 
-[arglist,range] = modifying_arg_list(g,CELLIDLIST,varargin{:});
+[arglist,range] = modifying_arg_list(CELLIDLIST,varargin{:});
 arglist = [0 arglist];
 for cellnum = range %
     if cellnum > 0

@@ -123,7 +123,7 @@ if exist('Firing','var') && length(Firing) == size(R,1)
         %if numel(unique(coeffs)) == 2
         if any(coeffs(idx_tes2t_range)) && ~any(coeffs(idx_test1_range))
             %coeffs = abs(coeffs);
-            if max(abs(coeffs)) > 0.4 %&& 4* max(coeffs(coeffs<max(coeffs))) < max(abs(coeffs))
+            if max(abs(coeffs)) > 0.2 %&& 4* max(coeffs(coeffs<max(coeffs))) < max(abs(coeffs))
                 [value, idx ] = max(abs(coeffs));
                 main_firing = Firing(logical(data(:,idx)));
                 ref_firing  = Firing(logical(~data(:,idx)));
@@ -153,7 +153,9 @@ if exist('Firing','var') && length(Firing) == size(R,1)
                 CVMdl1 = crossval(SVMModel2,'leaveout','on');
                 misclass1 = kfoldLoss(CVMdl1);
                 disp(misclass1)
-                
+                [D, P, SE] = rocarea2(main_firing,ref_firing,'bootstrap',1000)
+
+                perfcurve(logical(data(:,idx)),main_firing,'1')
                 %                 if find(SVMModel.ClassNames == 1) == 1
                 %                     class  = logical(SVMModel.Gradient < 0);
                 %                     class2 = logical(SVMModel.Gradient > 0);
@@ -182,7 +184,9 @@ if exist('Firing','var') && length(Firing) == size(R,1)
                 disp(F1_score_macro)
                 idx_trial = mod(idx-1,size(R,2))+1;
                 t = 1;
-            end
+                TheMatrix{idx_neuron,15}'
+            %end
+        end
         end
         
     end

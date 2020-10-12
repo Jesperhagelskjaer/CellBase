@@ -10,6 +10,7 @@ function yn = iscellid(cellid)
 %   Edit log: BH 5/4/12
 
 % Search among existing cellids
+global CELLIDLIST
 yn = validcellid(cellid,'list');
 yn = logical(yn);
 

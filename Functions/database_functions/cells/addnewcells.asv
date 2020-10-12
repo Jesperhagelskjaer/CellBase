@@ -14,9 +14,8 @@ function NUM_ADDED = addnewcells(varargin)
 %
 %   See also FINDALLCELLS and ADDCELL.
 
-%   Edit log: JH 2020_10_12
-global CELLIDLIST
-global TheMatrix
+%   Edit log: AK 10/06, BH 3/21/11, 4/30/14
+
 % Default arguments
 prs = inputParser;
 addParamValue(prs,'prealign',false,@(s)islogical(s)|ismember(s,[0 1]))   % control whether to run prealignSpikes
@@ -26,7 +25,8 @@ addParamValue(prs,'dir','',@ischar)   % restrict addnewcells to a directory
 parse(prs,varargin{:})
 g = prs.Results;
 loadcb
-
+global CELLIDLIST
+global TheMatrix
 
 
 % Find all cells and sort the new ones
@@ -90,15 +90,16 @@ if NUM_newcellids > 0
             end
         end
     end
-    idx = 0;
     for iC = [0 1:NUM_newcellids] %(JH)
         if iC > 0
             name = new_cellids{iC};
-            idx  = base_lgt + iC;
         else
             name = 0;
         end
-        addcell(name,idx,'quiet');  % add cells
+        OK = addcell(name,'quiet');  % add cells
+        if OK
+            NUM_ADDED = NUM_ADDED + 1;
+        end
     end   %iC
 else   %NUM_newcellids
     disp('No new cells found.')

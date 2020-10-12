@@ -1,4 +1,4 @@
-function [arg_list,range] = modifying_arg_list(g,CELLIDLIST,varargin)
+function [arg_list,range] = modifying_arg_list(CELLIDLIST,varargin)
 
 data_PN = varargin(find(strcmp(varargin,'property_names'))+1);
 

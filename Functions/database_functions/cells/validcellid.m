@@ -11,8 +11,9 @@ function yn = validcellid(cellid,varargin)
 %   Edit log: BH 6/23/11, 5/4/12
 
 % Search
+global CELLIDLIST
 if nargin > 1 &&  strcmpi(varargin{1},'list')   % search in CELLIDLIST     
-    load(getpref('cellbase','fname'),'CELLIDLIST');
+    %load(getpref('cellbase','fname'),'CELLIDLIST');
     yn = ~isempty(strmatch(char(cellid),CELLIDLIST));
 else
     try
