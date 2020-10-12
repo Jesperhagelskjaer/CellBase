@@ -10,7 +10,7 @@
 % NSSD_simularity_score        (done) 
 % tagging_pv                   (done) 
 % timing_CB_recording
-
+% checking_kernels
 
 %to run the different functions load the cellbase into the workspace and then run the different script given below
 %some of the script requires access to other variable given in other script
@@ -46,16 +46,16 @@
 
 %add_analysis(@Baiting,'property_names',1,{'BaitingFactor'})    
 
-%% Calculate the kernal for the behaviour behavior_kernels
+%% Calculate the coefficients for the behaviour behavior_kernels
 
 %use the binary lassoGLM
 
     % add_analysis(@behavior_kernels,0,'property_names',{'B_trial_behaviour'},'arglist',{'data',{'choice','reward','no_reward'}})
     
     % 'arglist'
-    % choice -> The choice kernel (reference C_left) fitting C_left
-    % reward -> The reward kernel (reference R_left) fitting R_left    
-    
+    % choice -> The choice kernel, implements both left and right [choice == -1 choice == 1]        (right == 1 ,left == -1)
+    % reward -> The reward kernel, implements both left and right [reward == -1 reward == 1]        (right == 1 ,left == -1)
+    % no_reward -> The no_reward,  implements both left and right [no_reward == -1 no_reward == 1]  (right == 1 ,left == -1)
     
 %% add_analysis(@behaviour_neurons_kernels,1,'property_names',{'B_trial_neuron','p_trial_neuron'})    
     

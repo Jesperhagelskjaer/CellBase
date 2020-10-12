@@ -7,7 +7,7 @@ function [varargout] = behavior_kernels(cellid,varargin)
 
 % The C_left and R_left is the reference.
 
-
+% not finished!!!!!!!!!!
 % created (JH) 2020-09-15
 
 global TheMatrix

@@ -1,26 +1,40 @@
 function [varargout] = behaviour_neurons_kernels(cellid,varargin)
-
-% add_analysis(@behaviour_neurons_kernels,1,'property_names',{'B_trial_neuron','p_trial_neuron'})
-% add_analysis(@behaviour_neurons_kernels,0,'property_names',{'B_trial_neuron','p_trial_neuron'},'arglist',{'ref',0})
+% NOTE!!!!!!!!!!!!!!
+% The trial input - both in reward, and no_reward, both the left and right side is used.
+% This will in make the trial_input collinear leading to that the coefficients is not-directly related to
+% the firing of the neuron for the given trial input. (This have been made after
+% the wish of Duda Kvitsiani).
+%
+% Example:
+% add_analysis(@behaviour_neurons_kernels,1,'property_names',{'B_trial_neuron','p_trial_neuron','AUC','P','stability','h'},'arglist',{'loops',25})
+% add_analysis(@behaviour_neurons_kernels,0,'property_names',{'B_trial_neuron','p_trial_neuron','AUC','P','stability'},'arglist',{'loops',25})
+% add_analysis(@behaviour_neurons_kernels,0,'property_names',{'B_trial_neuron','p_trial_neuron','AUC','P'},'arglist',{'loops',25,'display',1})
 % delanalysis(@behaviour_neurons_kernels)
-
+%
 % created (JH) 2020-07-20
 
 global TheMatrix
 global CELLIDLIST
-persistent f
-
+global f
 method       = varargin{1};
-
 if (cellid == 0)
     
     varargin(1)  = [];
     varargin     = [varargin{:}];
     
     prs = inputParser;
-    addParameter(prs,'loops',100,@(x) isnumeric(x) && iscaler(x) && (x > 0 ))
-    addParameter(prs,'data',{'choice','reward','no_reward'})
+    addParameter(prs,'loops',100,@(x) isnumeric(x) && (x > 0 ))
+    addParameter(prs,'data',{'reward','no_reward'})
     addParameter(prs,'ref',1,@(x) x == true || x == false)
+    addParameter(prs,'lgt',11,@(x) x > 0)
+    
+    if any(strcmp(method,'AUC')) || any(strcmp(method,'P')) || any(strcmp(method,'AUC_bootstr'))
+        addParameter(prs,'bootstrap',1000,@isnumeric)   % size of bootstrap sample
+        addParameter(prs,'transform','none',@(s)ismember(s,{'none' 'swap' 'scale'}))   % rescaling
+        addParameter(prs,'display',false,@(s)islogical(s)|ismember(s,[0 1]))   % control displaying rasters and PSTHs
+    end
+    
+    
     parse(prs,varargin{:})
     
     f = prs.Results;
@@ -48,6 +62,20 @@ if ~isnan(remove_index)
     else
         R  = TheMatrix{POS(1),findanalysis('R_trial')};
         C  = TheMatrix{POS(1),findanalysis('C_trial')};
+        NR = TheMatrix{POS(1),findanalysis('NR_trial')};
+        
+        R(:,1) = []; %The first is the anticipation of reward
+        NR(:,1) = []; %The first is the anticipation of reward
+        if (size(R,2) > f.lgt)
+            R(:,end-(size(R,2) - f.lgt):end-1) = [];
+        end
+        if (size(C,2) > f.lgt)
+            C(:,end-(size(C,2) - f.lgt):end) = [];
+        end
+        if (size(NR,2) > f.lgt)
+            NR(:,end-(size(NR,2) - f.lgt)) = [];
+        end
+        
     end
     
     Idx3 = findanalysis('CentralPortEpoch');
@@ -61,41 +89,49 @@ if ~isnan(remove_index)
     end
 end
 
-B_trial_neuron = nan;p_trial_neuron = nan;
+B_trial_neuron = nan;p_trial_neuron = nan;stability = nan;h = nan;
+[AUC,P] = deal(nan);
 if exist('Firing','var') && length(Firing) == size(R,1)
     % %IMPORTANT
-    F = zscore(Firing); %z_score pr columns (each nueron are centered to 0)
-
+    %F = Firing;
+    F = zscore(Firing); %z_score pr columns (each neuron are centered to 0)
+    
     if any(isnan(F))
         B_trial_neuron = nan(size(F,1),31);
+        
         p_trial_neuron = nan(size(F,1),31);
     else
         if f.ref
             data = [];
-            C(C == -1) = 0;  %reference C_left
             for i = 1:numel(f.data)
                 switch f.data{i}
                     case 'choice'
-                        data = [data C];
+                        data = [data C == -1 C == 1];
                     case 'reward'
-                        %reference  = R == -1;     %R_left
-                        data    = [data R == 1];   %R_right
+                        data  = [data R == -1 R == 1];   %R_right
                     case 'no_reward'
-                        reference  = R == -1; %R_left
-                        r_right    = R == 1;
-                        data  = [data ones(size(reference)) - reference - r_right]; %no_reward
-                end
+                        data  = [data NR == -1 NR == 1]; %no_reward
+                end           
             end
         else
-            R    = [R == 1 R == -1];
-            data = [C R];
+            C(C == -1) = 0;
+            data = [C  R == -1 R == 1];
         end
-        [B_trial_neuron, p_trial_neuron] = lasso_regression(F, data,f.loops);
+        [B_trial_neuron, p_trial_neuron,stability,h] = lasso_regression(F, data,f.loops,method);
+        
+        if any(strcmp(method,'AUC')) || any(strcmp(method,'P')) || any(strcmp(method,'AUC_bootstr'))
+            [AUC, P] =  AUC_kernels(Firing, data, B_trial_neuron,method); %send the not standized firing rate of the neurons
+        end
     end
 end
 
 varargout{1}.B_trial_neuron = B_trial_neuron;
 varargout{1}.p_trial_neuron = p_trial_neuron;
+varargout{1}.AUC            = AUC;
+varargout{1}.P              = P;
+varargout{1}.stability      = stability;
+varargout{1}.h              = h;
+
 
 end
 

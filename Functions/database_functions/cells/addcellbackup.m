@@ -93,6 +93,13 @@ for i = 1: NumAnal
         else
             TheMatrix(NewCell,columns) = property_values(1:length(columns));
         end
+    else
+        
+        if isfield(ANALYSES,'output_subset') && ~isempty(ANALYSES(i).output_subset)
+            TheMatrix(NewCell,columns) = cell2mat(property_values(ANALYSES(i).output_subset));
+        else
+            TheMatrix(NewCell,columns) = cell2mat(property_values(1:length(columns)));
+        end
     end
 end
 if NumAnal == 0

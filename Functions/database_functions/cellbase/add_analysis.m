@@ -52,7 +52,7 @@ for cellnum = range %
     %end
     if (cellnum  ~= 0)
         for i = 1:Lpropnames %(!)
-            holder{i} = property_values.(g.property_names{i});
+           holder{i} = property_values.(g.property_names{i});
         end
     else
         prs_value = property_values;
