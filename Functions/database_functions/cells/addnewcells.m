@@ -5,18 +5,12 @@ function NUM_ADDED = addnewcells(varargin)
 %   all the analyses. The number of newly added cells is returned.
 %
 %   NM = ADDNEWCELLS('PREALIGN',TRUE) calls PREALIGNSPIKES.
-%
-%   NM = ADDNEWCELLS('QUIET',TRUE) suppresses message displays.
-%
-%   NM = ADDNEWCELLS('DIR',DR) looks for new cells in DR. DR should contain
-%   the path downstream of the CellBase directory, e.g.
-%   addnewcells('dir','n046\130101a\')
-%
-%   See also FINDALLCELLS and ADDCELL.
+
 
 %   Edit log: JH 2020_10_12
 global CELLIDLIST
 global TheMatrix
+global ANALYSES
 % Default arguments
 prs = inputParser;
 addParamValue(prs,'prealign',false,@(s)islogical(s)|ismember(s,[0 1]))   % control whether to run prealignSpikes
@@ -26,8 +20,6 @@ addParamValue(prs,'dir','',@ischar)   % restrict addnewcells to a directory
 parse(prs,varargin{:})
 g = prs.Results;
 loadcb
-
-
 
 % Find all cells and sort the new ones
 if isempty(g.dir)
@@ -44,13 +36,12 @@ else
     new_cellids = setdiff(all_cellids,old_cellids);
     
 end
-base_lgt =  length(CELLIDLIST);
 CELLIDLIST = horzcat(CELLIDLIST, new_cellids);
 NUM_newcellids = length(new_cellids);
 
-cellbase_fname = getpref('cellbase','fname');
+
 % Add cells; prealign if called that way
-NUM_ADDED = 0;
+
 if NUM_newcellids > 0
     if g.prealign
         for iOld = 1:length(old_cellids) % get the latest events and epochs in the database
@@ -90,20 +81,34 @@ if NUM_newcellids > 0
             end
         end
     end
-    idx = 0;
-    for iC = [0 1:NUM_newcellids] %(JH)
-        if iC > 0
-            name = new_cellids{iC};
-            idx  = base_lgt + iC;
-        else
-            name = 0;
+   
+    
+    for i = 1:numel(ANALYSES)
+        funhandle = ANALYSES(i).funhandle;
+        columns   = ANALYSES(i).columns;
+        prop      = ANALYSES(i).propnames;
+        varg      = ANALYSES(i).parseInput_func;
+        
+        names = fieldnames(ANALYSES(i).parseInput_func);
+        for m = 0:numel(varg)-1
+            input_var{1,m*2+1}    =   names{m+1};
+            input_var{1,m*2+2}    =   ANALYSES(i).parseInput_func.(names{m+1});
         end
-        addcell(name,idx,'quiet');  % add cells
-    end   %iC
+        
+        for iC = [0 1:NUM_newcellids] %(JH)
+            if iC > 0
+                cellid = new_cellids{iC};
+            else
+                cellid = 0;
+            end    
+            addcell(funhandle,cellid,columns,prop,input_var);  % add cells
+        end   
+    end
 else   %NUM_newcellids
     disp('No new cells found.')
 end
 
+cellbase_fname = getpref('cellbase','fname');
 assignin('base','TheMatrix',TheMatrix)
 assignin('base','CELLIDLIST',CELLIDLIST)
 save(cellbase_fname,'TheMatrix','ANALYSES','CELLIDLIST')
