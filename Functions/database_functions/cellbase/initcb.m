@@ -89,7 +89,8 @@ fid = fopen(fname);
 if ( fid == -1) || strcmp(questdlg(QuestionStr,'InitCB','Yes','No','No'),'Yes') %file doesn't exist or to be deleted !
     
     % Save empty CellBase
-    [TheMatrix,ANALYSES,CELLIDLIST]  = deal([]);
+    [ANALYSES,CELLIDLIST]  = deal([]);
+    TheMatrix = {};
     save(fname,'TheMatrix','ANALYSES','CELLIDLIST');
     
     Data = imread('CellBase_icon.tif');
