@@ -13,9 +13,9 @@ method       = varargin{1};
 
 if (cellid == 0)
     varargin(1)  = [];
-    varargin     = [varargin{:}];
+    varargin     = [varargin{:}];  
+    prs          = inputParser;
     
-    prs = inputParser;
     addParameter(prs,'path',getpref('cellbase').datapath,@ischar) %
     parse(prs,varargin{:})
     
@@ -33,9 +33,9 @@ for i = 1:numel(method)
             SpikeTimes               = loadcb(cellid,'Spikes');
             if length(SpikeTimes) == 1
                 [~, timestamps, ~] = load_open_ephys_data_faster(fullfile(path_full,'all_channels.events'));
-                firing = length(SpikeTimes)/(timestamps(end)-timestamps(1));
+                firing             = length(SpikeTimes)/(timestamps(end)-timestamps(1));
             else
-                firing = length(SpikeTimes)/(SpikeTimes(end)-SpikeTimes(1));
+                firing             = length(SpikeTimes)/(SpikeTimes(end)-SpikeTimes(1));
             end
             
         case 'CentralPortEpoch'

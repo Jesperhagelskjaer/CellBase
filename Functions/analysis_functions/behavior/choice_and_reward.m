@@ -29,7 +29,7 @@ if (cellid == 0)
     return
 end
 
-[r,s,~,~] = cellid2tags(cellid);
+[r,s,~,~]  = cellid2tags(cellid);
 idx_neuron = findcellstr(CELLIDLIST',cellid); % CELLIDLIST must be column vector
 if idx_neuron > 1
     cellid_2    = CELLIDLIST(idx_neuron-1);
@@ -41,13 +41,13 @@ end
 directory = fullfile(f.path,r,s);
 number_files = size(dir([directory, '\' '*FreeChoiceDyn*']),1);
 
-[RH, NRH, CH, Indices_to_erase] = deal(nan, nan, nan, nan);
+[RH, NRH, CH, Indices_to_erase] = deal(nan);
 if number_files == 1 %if multiple behavior files is not possible to find out which one to take
     if ~(strcmp(r,r2) && strcmp(s,s2))
         TE = loadcb(cellid,'TrialEvents');
         [RH, CH, NRH, Indices_to_erase] = Collect_Reward_Choice_History(TE);
     else
-        [RH, NRH, CH, Indices_to_erase] = deal([], [], [], []);
+        [RH, NRH, CH, Indices_to_erase] = deal([]);
     end
 end
 

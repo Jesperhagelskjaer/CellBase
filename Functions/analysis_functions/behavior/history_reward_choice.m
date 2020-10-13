@@ -5,8 +5,7 @@ function [varargout] = history_reward_choice(cellid,varargin)
 % delanalysis(@history_reward_choice)
 
 % created (JH) 2020-07-19
-% To Do
-% rewrite so no flipping is need change Junior code
+
 
 global TheMatrix
 global CELLIDLIST
@@ -21,7 +20,7 @@ if (cellid == 0)
     prs = inputParser;
     
     addParameter(prs,'path',getpref('cellbase').datapath,@ischar) %
-    addParameter(prs,'Trials_back',11,@isnumeric)
+    addParameter(prs,'Trials_back',11,@(x) isscalar(x) && isnumeric(x) && x > 0)
     parse(prs,varargin{:})
     
     f = prs.Results;
@@ -30,18 +29,16 @@ if (cellid == 0)
     return
 end
 
-Trials_back = f.Trials_back;
-
 [ratname,session,~,~] = cellid2tags(cellid);
-path_rat = fullfile(f.path,ratname,session);
-full_temp = fullfile(path_rat,'*FreeChoice*');
-behavior_session = size(dir(full_temp),1);
+path_rat              = fullfile(f.path,ratname,session);
+full_temp             = fullfile(f.path,ratname,session,'*FreeChoice*');
+behavior_session      = size(dir(full_temp),1);
 
 [r,s,~,~] = cellid2tags(cellid);
 
-status = 1;
 idx_neuron = findcellstr(CELLIDLIST',cellid); % CELLIDLIST must be column vector
 POS = findcellpos('animal',r,'session',s); %(!) find faster method
+status = 1;
 if (POS(1) == idx_neuron) %check for already done
     status = 0;
 end
@@ -65,21 +62,15 @@ if (behavior_session == 1) && ~isnan(status)
 end
 
 if isnan(status) || behavior_session ~= 1
-    R_trial        = nan;
-    C_trial        = nan;
-    NR_trial       = nan;
+    [R_trial,C_trial,NR_trial]       = deal(nan);
 elseif status == 0
     CH(isnan(CH))             = []; %check up on (JH)
     RH(isnan(RH))             = []; %check up on (JH)
     NRH(isnan(NRH))           = []; %check up on (JH)
     % TRIALS
-    [R_trial, NR_trial, C_trial] = Get_history_matrices(RH, CH, NRH, Trials_back);
-
+    [R_trial, NR_trial, C_trial] = Get_history_matrices(RH, CH, NRH, f.Trials_back);
 elseif status == 1
-    R_trial        = [];
-    NR_trial       = [];
-    C_trial        = [];
-    
+    [R_trial,C_trial,NR_trial]       = deal([]);  
 end
 
 varargout{1}.R_trial        = R_trial;

@@ -52,8 +52,7 @@ disp(['File name is ' fname])
 disp(['CellBase name is ' cb_name])
 
 % Timestamp conversion
-tsc = questdlg('I''m going convert timestamps to seconds in','Timestamp conversion',...
-    'CellBase','MClust','CellBase');
+tsc = questdlg('I''m going convert timestamps to seconds in','Timestamp conversion','CellBase','MClust','CellBase');
 switch tsc
     case 'CellBase'
         timefactor = 1e-4;  % TT*.mat files will reflect the timestamps of the Ntt files;

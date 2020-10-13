@@ -154,7 +154,7 @@ if exist('Firing','var') && length(Firing) == size(R,1)
                 misclass1 = kfoldLoss(CVMdl1);
                 disp(misclass1)
                 [D, P, SE] = rocarea2(main_firing,ref_firing,'bootstrap',1000)
-
+                
                 perfcurve(logical(data(:,idx)),main_firing,'1')
                 %                 if find(SVMModel.ClassNames == 1) == 1
                 %                     class  = logical(SVMModel.Gradient < 0);
@@ -184,9 +184,9 @@ if exist('Firing','var') && length(Firing) == size(R,1)
                 disp(F1_score_macro)
                 idx_trial = mod(idx-1,size(R,2))+1;
                 t = 1;
-                TheMatrix{idx_neuron,15}'
-            %end
-        end
+                
+                %end
+            end
         end
         
     end

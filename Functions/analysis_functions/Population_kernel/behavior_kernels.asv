@@ -65,12 +65,18 @@ else
             
         end
         B_temp = zeros(f.loops, size(data, 2));      
-        for j = 1:f.loops 
+        parfor j = 1:f.loops % PARALLEL
             [B,FitInfo] = lassoglm(data,y,'binomial','CV',2);
             B_temp(j, :)  = B(:, FitInfo.IndexMinDeviance)';    
         end
         B = median(B_temp);
+        %figure
+        %plot(B)
+        %close all
     end
+
+
+
 end
 
 varargout{1}.B_trial_behaviour = B;

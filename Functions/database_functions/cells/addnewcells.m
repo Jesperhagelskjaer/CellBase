@@ -1,4 +1,4 @@
-function NUM_ADDED = addnewcells(varargin)
+function addnewcells(varargin)
 %ADDNEWCELLS   Add new cells to CellBase.
 %   NM = ADDNEWCELLS adds new cells found in Cellbase directory structure
 %   to CellBase calling FINDALLCELLS. It calls ADDCELL, which also performs
@@ -14,8 +14,6 @@ global ANALYSES
 % Default arguments
 prs = inputParser;
 addParamValue(prs,'prealign',false,@(s)islogical(s)|ismember(s,[0 1]))   % control whether to run prealignSpikes
-addParamValue(prs,'quiet',false,@(s)islogical(s)|ismember(s,[0 1]))   % control command line messages
-addParamValue(prs,'force',false,@(s)islogical(s)|ismember(s,[0 1]))   % force mode disabled for now
 addParamValue(prs,'dir','',@ischar)   % restrict addnewcells to a directory
 parse(prs,varargin{:})
 g = prs.Results;
@@ -33,41 +31,31 @@ old_cellids = listtag('cells');
 if isempty(old_cellids)
     new_cellids = all_cellids;  % setdiff fails for empty set
 else
-    new_cellids = setdiff(all_cellids,old_cellids);
-    
+    new_cellids = setdiff(all_cellids,old_cellids);   
 end
-CELLIDLIST = horzcat(CELLIDLIST, new_cellids);
+CELLIDLIST = horzcat(CELLIDLIST, new_cellids);              
 NUM_newcellids = length(new_cellids);
 
 
 % Add cells; prealign if called that way
-
 if NUM_newcellids > 0
     if g.prealign
         for iOld = 1:length(old_cellids) % get the latest events and epochs in the database
             try
                 EVENTSPIKES = loadcb(old_cellids(iOld),'EventSpikes');
-            catch
-                EVENTSPIKES = [];
-            end
-            if ~isempty(EVENTSPIKES)
                 behav_events = EVENTSPIKES.events;
                 behav_epochs = EVENTSPIKES.epochs;
                 break
-            else
+            catch
             end
         end
         for iOld = 1:length(old_cellids)  % get the latest events and epochs in the database
             try
                 STIMSPIKES = loadcb(old_cellids(iOld),'StimSpikes');
-            catch
-                STIMSPIKES = [];
-            end
-            if ~isempty(STIMSPIKES)
                 stim_events = STIMSPIKES.events;
                 stim_epochs = STIMSPIKES.epochs;
                 break
-            else
+            catch
             end
         end
         for iNuCell = 1:length(new_cellids)
@@ -87,21 +75,18 @@ if NUM_newcellids > 0
         funhandle = ANALYSES(i).funhandle;
         columns   = ANALYSES(i).columns;
         prop      = ANALYSES(i).propnames;
-        varg      = ANALYSES(i).parseInput_func;
+        varg      = struct2cell(ANALYSES(i).parseInput_func);
         
         names = fieldnames(ANALYSES(i).parseInput_func);
-        for m = 0:numel(varg)-1
-            input_var{1,m*2+1}    =   names{m+1};
-            input_var{1,m*2+2}    =   ANALYSES(i).parseInput_func.(names{m+1});
-        end
         
-        for iC = [0 1:NUM_newcellids] %(JH)
+        input_var = reshape([names(:) varg(:)]',1,[]);                     % combining key and values into a row vector
+        for iC = [0 1:NUM_newcellids]                                      % using zero to set the parameter used in the functions              
             if iC > 0
                 cellid = new_cellids{iC};
             else
                 cellid = 0;
             end    
-            addcell(funhandle,cellid,columns,prop,input_var);  % add cells
+            addcell(funhandle,cellid,columns,prop,input_var);  
         end   
     end
 else   %NUM_newcellids
@@ -112,8 +97,32 @@ cellbase_fname = getpref('cellbase','fname');
 assignin('base','TheMatrix',TheMatrix)
 assignin('base','CELLIDLIST',CELLIDLIST)
 save(cellbase_fname,'TheMatrix','ANALYSES','CELLIDLIST')
-
-
 end
 
-
+%legacy
+%         for iOld = 1:length(old_cellids) % get the latest events and epochs in the database
+%             try
+%                 EVENTSPIKES = loadcb(old_cellids(iOld),'EventSpikes');
+%             catch
+%                 EVENTSPIKES = [];
+%             end
+%             if ~isempty(EVENTSPIKES)
+%                 behav_events = EVENTSPIKES.events;
+%                 behav_epochs = EVENTSPIKES.epochs;
+%                 break
+%             else
+%             end
+%         end
+%         for iOld = 1:length(old_cellids)  % get the latest events and epochs in the database
+%             try
+%                 STIMSPIKES = loadcb(old_cellids(iOld),'StimSpikes');
+%             catch
+%                 STIMSPIKES = [];
+%             end
+%             if ~isempty(STIMSPIKES)
+%                 stim_events = STIMSPIKES.events;
+%                 stim_epochs = STIMSPIKES.epochs;
+%                 break
+%             else
+%             end
+%         end

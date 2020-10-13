@@ -64,7 +64,7 @@ if ~isnan(remove_index)
         C  = TheMatrix{POS(1),findanalysis('C_trial')};
         NR = TheMatrix{POS(1),findanalysis('NR_trial')};
         
-        R(:,1) = []; %The first is the anticipation of reward
+        R(:,1)  = []; %The first is the anticipation of reward
         NR(:,1) = []; %The first is the anticipation of reward
         if (size(R,2) > f.lgt)
             R(:,end-(size(R,2) - f.lgt):end-1) = [];
@@ -75,7 +75,6 @@ if ~isnan(remove_index)
         if (size(NR,2) > f.lgt)
             NR(:,end-(size(NR,2) - f.lgt)) = [];
         end
-        
     end
     
     Idx3 = findanalysis('CentralPortEpoch');
@@ -131,8 +130,6 @@ varargout{1}.AUC            = AUC;
 varargout{1}.P              = P;
 varargout{1}.stability      = stability;
 varargout{1}.h              = h;
-
-
 end
 
 
