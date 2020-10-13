@@ -6,7 +6,7 @@ function [varargout] = behaviour_neurons_kernels(cellid,varargin)
 % the wish of Duda Kvitsiani).
 %
 % Example:
-% add_analysis(@behaviour_neurons_kernels,1,'property_names',{'B_trial_neuron','p_trial_neuron','AUC','P','AUC_own','P_own'},'arglist',{'loops',25})
+% add_analysis(@behaviour_neurons_kernels,1,'property_names',{'B_trial_neuron','p_trial_neuron','AUC','P','stability','h','AUC_own','P_own'},'arglist',{'loops',25})
 % add_analysis(@behaviour_neurons_kernels,0,'property_names',{'B_trial_neuron','p_trial_neuron','AUC','P','stability'},'arglist',{'loops',25})
 % add_analysis(@behaviour_neurons_kernels,0,'property_names',{'B_trial_neuron','p_trial_neuron','AUC','P'},'arglist',{'loops',25,'display',1})
 % delanalysis(@behaviour_neurons_kernels)
@@ -121,7 +121,7 @@ if exist('Firing','var') && length(Firing) == size(R,1)
         if any(strcmp(method,'AUC')) || any(strcmp(method,'P')) || any(strcmp(method,'AUC_bootstr'))
             [AUC, P] =  AUC_kernels(Firing, data, B_trial_neuron,method,'all'); %send the not standized firing rate of the neurons
         end
-        if any(strcmp(method,'AUC_own')) 
+        if any(strcmp(method,'own_AUC')) 
             [AUC_own, P_own] =  AUC_kernels(Firing, data, B_trial_neuron,method,'own'); %send the not standized firing rate of the neurons
         end
     end

@@ -79,7 +79,7 @@ if f.display
 end
 
 % -------------------------------------------------------------------------
-function [D cdfx cdfy] = auc(x,y,Lx,Ly,bins)
+function [D, cdfx, cdfy] = auc(x,y,Lx,Ly,bins)
 
 % Distributions
 px = histc(x,bins);   % distribution of first sample
