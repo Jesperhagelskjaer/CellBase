@@ -63,7 +63,7 @@
     % loops  -> (default 25) the number of times the lasso regression is calculated for each session where the median of the calculated kernels is returned as B_trial_behaviour
     % trials -> Number of trials back in time taking into the regression analysis. Must be same or have a smaller size than the  
 %output     
-    % B_trial_behaviour -> the coefficients for the lasso regression on the data structure given by the input 'data' given in the order as the input     
+    % B_trial_behaviour -> the coefficient for the lasso regression on the data structure given by the input 'data' given in the order as the input     
 
 %error that could happen
 %1) 
@@ -75,11 +75,11 @@
 
     % B_trial_neuron -> the calculated kernels 
     % p_trial_neuron -> the calcualted p-value set to 5 % confidence interval
-    % chow           -> test if the two half of the the hehavior is stable
+    % chow           -> test if the two hard of the the hehavior is stable
     % AUC/AUC_bootstr->
-        %   'bootstrap' -> (default 0 - no bootstraping) otherwise give a positive number on the number of bootstrapping  
-        %   'transform' -> (default - 'none')  'swap' 'scale'}))   % rescaling the AUC value 
-        %   'display'   -> (default - false)     (0 1)   
+        %'bootstrap', default (0 no bootstraping) otherwise give a positive number on the number of bootstrapping  
+        %'transform', default 'none'  'swap' 'scale'}))   % rescaling the AUC value 
+        %'display'  , defalfalse,@(s)islogical(s)|ismember(s,[0 1]))   
 
 % 'arglist'
     % 'data' -> default (R NR) [-1 1]
@@ -89,6 +89,10 @@
     
     % loops  -> (default 25) the number of times the lasso regression is calculated for each session where the median of the calculated kernels is returned as B_trial_behaviour
     % trials -> Number of trials back in time taking into the regression analysis. Must be same or have a smaller size than the  
+
+
+
+
 
 % Chow test 
 % The https://en.wikipedia.org/wiki/Chow_test

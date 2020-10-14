@@ -26,7 +26,7 @@ if (cellid == 0)
     prs = inputParser;
     addParameter(prs,'data',{'reward','no_reward'})
     addParameter(prs,'ref',1,@(x) x == true || x == false)
-    addParameter(prs,'lgt',11,@(x) x > 0)
+    addParameter(prs,'trials',11,@(x) x > 0)
     
     parse(prs,varargin{:})
     
@@ -59,14 +59,14 @@ if ~isnan(remove_index)
         
         R(:,1) = []; %The first is the anticipation of reward
         NR(:,1) = []; %The first is the anticipation of reward
-        if (size(R,2) > f.lgt)
-            R(:,end-(size(R,2) - f.lgt):end-1) = [];
+        if (size(R,2) > f.trials)
+            R(:,end-(size(R,2) - f.trials):end-1) = [];
         end
-        if (size(C,2) > f.lgt)
-            C(:,end-(size(C,2) - f.lgt):end) = [];
+        if (size(C,2) > f.trials)
+            C(:,end-(size(C,2) - f.trials):end) = [];
         end
-        if (size(NR,2) > f.lgt)
-            NR(:,end-(size(NR,2) - f.lgt)) = [];
+        if (size(NR,2) > f.trials)
+            NR(:,end-(size(NR,2) - f.trials)) = [];
         end
     end
     
@@ -76,7 +76,6 @@ if ~isnan(remove_index)
     else
         coeffs  = TheMatrix{idx_neuron,findanalysis('B_trial_neuron')};
     end
-    
     
     Idx3 = findanalysis('CentralPortEpoch');
     if ~all(Idx3)
@@ -98,98 +97,94 @@ if exist('Firing','var') && length(Firing) == size(R,1)
     if any(isnan(F))
         test = nan;
     else
-        if f.ref
-            data = [];
-            for i = 1:numel(f.data)
-                switch f.data{i}
-                    case 'choice'
-                        data = [data C == -1 C == 1];
-                    case 'reward'
-                        data  = [data R == -1 R == 1];   %R_right
-                    case 'no_reward'
-                        data  = [data NR == -1 NR == 1]; %no_reward
-                end
-            end
-        else
-            C(C == -1) = 0;
-            data = [C  R == -1 R == 1];
-        end
-        
-        idx_test1 = 1:4;
-        idx_test2 = 5:10;
-        idx_test1_range  = [idx_test1 (10+idx_test1) (10*2+idx_test1) (10*3+idx_test1)];
-        idx_tes2t_range  = [idx_test2 (10+idx_test2) (10*2+idx_test2) (10*3+idx_test2)];
-        
-        %if numel(unique(coeffs)) == 2
-        if any(coeffs(idx_tes2t_range)) && ~any(coeffs(idx_test1_range))
-            %coeffs = abs(coeffs);
-            if max(abs(coeffs)) > 0.2 %&& 4* max(coeffs(coeffs<max(coeffs))) < max(abs(coeffs))
-                [value, idx ] = max(abs(coeffs));
-                main_firing = Firing(logical(data(:,idx)));
-                ref_firing  = Firing(logical(~data(:,idx)));
-                ground_truth = logical(data(:,idx));
-                
-                figure
-                subplot(2,2,1)
-                
-                histogram(main_firing,30)
-                hold on
-                histogram(ref_firing,30)
-                legend({'action','no action'})
-                title('index method - firing rate')
-                subplot(2,2,2)
-                
-                histogram(Firing(logical(C(:,mod(idx-1,size(R,2))+2))),30)
-                hold on
-                histogram(Firing(~logical(C(:,mod(idx-1,size(R,2))+2))),30)
-                title('choice - firing rate')
-                
-                subplot(2,2,3)
-                plot(coeffs)
-                title('coefficients - kernels')
-                
-                SVMModel = fitcsvm(Firing,logical(data(:,idx)));
-                SVMModel2 = fitcsvm(Firing,logical(C(:,mod(idx-1,size(R,2))+2)));
-                CVMdl1 = crossval(SVMModel2,'leaveout','on');
-                misclass1 = kfoldLoss(CVMdl1);
-                disp(misclass1)
-                [D, P, SE] = rocarea2(main_firing,ref_firing,'bootstrap',1000)
-                
-                perfcurve(logical(data(:,idx)),main_firing,'1')
-                %                 if find(SVMModel.ClassNames == 1) == 1
-                %                     class  = logical(SVMModel.Gradient < 0);
-                %                     class2 = logical(SVMModel.Gradient > 0);
-                %                 else
-                %                     class  = logical(SVMModel.Gradient > 0);
-                %                     class2 = logical(SVMModel.Gradient < 0);
-                %                 end
-                
-                %                 CVMdl1 = crossval(SVMModel,'leaveout','on');
-                %                 misclass1 = kfoldLoss(CVMdl1);
-                %                 disp(misclass1)
-                
-                %
-                %                 disp(sum(and(ground_truth,class))/sum(ground_truth))
-                %                 disp(sum(and(~ground_truth,class2))/sum(~ground_truth))
-                %sum(and(ground_truth,~class))/sum(~ground_truth)
-                
-                [predictedY,score] = resubPredict(SVMModel);
-                subplot(2,2,4)
-                title('confusion chart')
-                cm = confusionchart(logical(data(:,idx)),predictedY,'RowSummary','row-normalized','ColumnSummary','column-normalized');
-                con = cm.NormalizedValues;
-                F1_score1 = 2 * con(1,1)/(2*con(1,1)+con(2,1)+con(1,2));
-                F1_score2 = 2 * con(2,2)/(2*con(2,2)+con(2,1)+con(1,2));
-                F1_score_macro = (F1_score1+F1_score2)/2;
-                disp(F1_score_macro)
-                idx_trial = mod(idx-1,size(R,2))+1;
-                t = 1;
-                
-                %end
+        data = [];
+        for i = 1:numel(f.data)
+            switch f.data{i}
+                case 'choice'
+                    data = [data C == -1 C == 1];
+                case 'reward'
+                    data  = [data R == -1 R == 1];   %R_right
+                case 'no_reward'
+                    data  = [data NR == -1 NR == 1]; %no_reward
             end
         end
-        
     end
+    
+    idx_test1 = 1:4;
+    idx_test2 = 5:10;
+    idx_test1_range  = [idx_test1 (10+idx_test1) (10*2+idx_test1) (10*3+idx_test1)];
+    idx_tes2t_range  = [idx_test2 (10+idx_test2) (10*2+idx_test2) (10*3+idx_test2)];
+    
+    %if numel(unique(coeffs)) == 2
+    if any(coeffs(idx_tes2t_range)) && ~any(coeffs(idx_test1_range))
+        %coeffs = abs(coeffs);
+        if max(abs(coeffs)) > 0.2 %&& 4* max(coeffs(coeffs<max(coeffs))) < max(abs(coeffs))
+            [value, idx ] = max(abs(coeffs));
+            main_firing = Firing(logical(data(:,idx)));
+            ref_firing  = Firing(logical(~data(:,idx)));
+            ground_truth = logical(data(:,idx));
+            
+            figure
+            subplot(2,2,1)
+            
+            histogram(main_firing,30)
+            hold on
+            histogram(ref_firing,30)
+            legend({'action','no action'})
+            title('index method - firing rate')
+            subplot(2,2,2)
+            
+            histogram(Firing(logical(C(:,mod(idx-1,size(R,2))+2))),30)
+            hold on
+            histogram(Firing(~logical(C(:,mod(idx-1,size(R,2))+2))),30)
+            title('choice - firing rate')
+            
+            subplot(2,2,3)
+            plot(coeffs)
+            title('coefficients - kernels')
+            
+            SVMModel = fitcsvm(Firing,logical(data(:,idx)));
+            SVMModel2 = fitcsvm(Firing,logical(C(:,mod(idx-1,size(R,2))+2)));
+            CVMdl1 = crossval(SVMModel2,'leaveout','on');
+            misclass1 = kfoldLoss(CVMdl1);
+            disp(misclass1)
+            [D, P, SE] = rocarea2(main_firing,ref_firing,'bootstrap',1000)
+            
+            perfcurve(logical(data(:,idx)),main_firing,'1')
+            %                 if find(SVMModel.ClassNames == 1) == 1
+            %                     class  = logical(SVMModel.Gradient < 0);
+            %                     class2 = logical(SVMModel.Gradient > 0);
+            %                 else
+            %                     class  = logical(SVMModel.Gradient > 0);
+            %                     class2 = logical(SVMModel.Gradient < 0);
+            %                 end
+            
+            %                 CVMdl1 = crossval(SVMModel,'leaveout','on');
+            %                 misclass1 = kfoldLoss(CVMdl1);
+            %                 disp(misclass1)
+            
+            %
+            %                 disp(sum(and(ground_truth,class))/sum(ground_truth))
+            %                 disp(sum(and(~ground_truth,class2))/sum(~ground_truth))
+            %sum(and(ground_truth,~class))/sum(~ground_truth)
+            
+            [predictedY,score] = resubPredict(SVMModel);
+            subplot(2,2,4)
+            title('confusion chart')
+            cm = confusionchart(logical(data(:,idx)),predictedY,'RowSummary','row-normalized','ColumnSummary','column-normalized');
+            con = cm.NormalizedValues;
+            F1_score1 = 2 * con(1,1)/(2*con(1,1)+con(2,1)+con(1,2));
+            F1_score2 = 2 * con(2,2)/(2*con(2,2)+con(2,1)+con(1,2));
+            F1_score_macro = (F1_score1+F1_score2)/2;
+            disp(F1_score_macro)
+            idx_trial = mod(idx-1,size(R,2))+1;
+            t = 1;
+            
+            %end
+        end
+    end
+    
+end
 end
 
 varargout{1}.F1_score_macro = F1_score_macro;

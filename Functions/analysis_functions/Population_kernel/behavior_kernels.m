@@ -1,12 +1,9 @@
 function [varargout] = behavior_kernels(cellid,varargin)
 
 % add_analysis(@behavior_kernels,1,'property_names',{'B_trial_behaviour'})
-% add_analysis(@behavior_kernels,1,'property_names',{'B_trial_behaviour'},'arglist',{'data',{'choice','reward','no_reward'}})
+% add_analysis(@behavior_kernels,0,'property_names',{'B_trial_behaviour'},'arglist',{'data',{'R','NR'},'trials',5})
 
 % delanalysis(@behavior_kernels)
-
-% The C_left and R_left is the reference.
-
 
 % created (JH) 2020-09-15
 
@@ -22,64 +19,58 @@ if (cellid == 0)
     varargin     = [varargin{:}];
     
     prs = inputParser;
-    addParameter(prs,'loops',10,@(x) isnumeric(x) && (x > 0 ))
-    addParameter(prs,'trials',11,@(x) isnumeric(x) && iscaler(x) && (x > 0 ))
-    addParameter(prs,'data',{'reward','no_reward'})
+    addParameter(prs,'loops', 10,@(x) isscalar(x) && (x > 0 ))
+    addParameter(prs,'trials',10,@(x) isscalar(x) && (x > 0 ))
+    addParameter(prs,'data',{'R','NR'})
     parse(prs,varargin{:})
     
     f = prs.Results;
     
     varargout{1}.prs = prs;
+    checking_his(f);
     return
 end
 
 idx_neuron = findcellstr(CELLIDLIST',cellid);
 
-Idx = findanalysis(@history_reward_choice);
-if ~all(Idx)
-    fprintf("addanalysis(@history_reward_choice,1,'property_names',{'R_trial','C_trial'})\n")
+C  = TheMatrix{idx_neuron,findanalysis('C_trial')};
+if any(isnan(C))
+    B = nan;
+elseif isempty(C)
+    B = [];
 else
-    R  = TheMatrix{idx_neuron,findanalysis('R_trial')};
-    NR = TheMatrix{idx_neuron,findanalysis('NR_trial')};
-    C  = TheMatrix{idx_neuron,findanalysis('C_trial')};
-   
-    if any(isnan(R))
-        B = nan;
-    elseif isempty(R)
-        B = [];
-    else
-        data = [];
-        C(C == -1) = 0;  %reference C_left
-        y          = C(:,1);     
-        R          = R(:,2:f.trials);
-        NR         = NR(:,2:f.trials);
-        for i = 1:numel(f.data)
-            switch f.data{i}    
-                case 'choice'
-                    data = [data C(:,2:f.trials)];
-                case 'reward'
-                    data    = [data R == -1 R == 1];   %R_right                   
-                case 'no_reward'
-                    data    = [data NR == -1 NR == 1];   %R_right 
-            end
-            
+    
+    C(C == -1) = 0;  %reference C_left
+    y          = C(:,1);
+    C          = C(:,2:f.trials+1);
+    
+    data = [];
+    for i = 1:numel(f.data)
+        switch f.data{i}
+            case 'C'
+                data = [data C];
+            case 'R'
+                R    = TheMatrix{idx_neuron,findanalysis('R_trial')};
+                R    = R(:,2:f.trials+1);
+                data = [data R == -1 R == 1];
+            case 'NR'
+                NR = TheMatrix{idx_neuron,findanalysis('NR_trial')};
+                NR = NR(:,2:f.trials+1);
+                data    = [data NR == -1 NR == 1];
         end
-        B_temp = zeros(f.loops, size(data, 2));      
-        for j = 1:f.loops 
-            [B,FitInfo] = lassoglm(data,y,'binomial','CV',2);
-            B_temp(j, :)  = B(:, FitInfo.IndexMinDeviance)';    
-        end
-        B = median(B_temp);
     end
+    B_temp = zeros(f.loops, size(data, 2));
+    for j = 1:f.loops
+        [B,FitInfo] = lassoglm(data,y,'binomial','CV',2);
+        B_temp(j, :)  = B(:, FitInfo.IndexMinDeviance)';
+    end
+    B = median(B_temp);
+    
 end
 
 varargout{1}.B_trial_behaviour = B;
 end
 
 
-%%
-%data       = [C(:,2:f.trials) r_right no_reward];
 
-%R = [double(R == 1) double(R == -1)];
-%data = [C(:,2:f.trials),R];
 
