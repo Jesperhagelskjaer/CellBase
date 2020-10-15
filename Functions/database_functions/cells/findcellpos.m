@@ -2,14 +2,7 @@ function matches = findcellpos(varargin)
 %FINDCELLPOS   Locate animal, session or tetrode positions in CellBase.
 %   POS = FINDCELLPOS(CELLID) returns the position of CELLID in
 %   CELLIDLIST.
-%
-%
-%   POS = FINDCELLPOS('RAT',RATID,'SESSION',SESSIONID) locates a session in
-%   CELLIDLIST.
-%
-%   POS = FINDCELLPOS('RAT',RATID,'SESSION',SESSIONID,'TETRODE',TET)
-%   locates a tetrode in CELLIDLIST.
-%
+
 %   FINDCELLPOS returns the matching position indices in CellBase for a
 %   particular animal, session, cell or tetrode.
 %

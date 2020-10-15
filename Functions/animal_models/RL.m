@@ -134,8 +134,9 @@ end
 
 Trials_back     = 11;
 firing          = 7;
-inc_noice_f     = 1;
-remember_rate   = 0.7;
+inc_noice_f     = 0;
+inc_noice_n     = 10;
+remember_rate   = 1;
 Firing          = zeros(nTrial+11,1);
 reward_left     = reward(1,:)';
 reward_right    = reward(2,:)';
@@ -157,8 +158,8 @@ all_reward      = reward_left + reward_right;
 %condition = {'reward_right',1,3,0.5;...     
 %             'reward_left', 1,4,2;};
 
-%condition = {'a_right',1,3,2;...      
-%             'a_left', 1,4,3;};
+condition = {'reward_left',1,3,5;...      
+             'reward_left',1,6,20;};
 
 
 %condition = {'no_reward',1,3,2};      
@@ -174,9 +175,9 @@ all_reward      = reward_left + reward_right;
 %condition = {'reward_left',1,3,0.5};
 %condition = {'no_reward_left',1,3,2};
 %condition = {'no_reward_left',1,3,0.5};
-condition = {'a_right',1,3,2;...
-             'no_reward_left',1,3,1.4;...
-             'reward_right',1,3,1.2};
+%condition = {'a_right',1,3,2;...
+ %            'no_reward_left',1,3,1.4;...
+ %            'reward_right',1,3,1.2};
 
 r = rand(numel(Firing),1) - 1;
 Firing(:) = firing+r*inc_noice_f;
@@ -190,7 +191,7 @@ for c = 1:size(condition,1)
         if value(t) == 1
              if remember_rate > rand
                 if ~(incrase_f == 1)  
-                    Firing(t+trial_lag) = Firing(t+trial_lag) + incrase_f * rand;
+                    Firing(t+trial_lag) = Firing(t+trial_lag) + incrase_f + (rand-0.5)*inc_noice_n;
                 end
             end
             con(t+trial_lag) = c;
@@ -224,8 +225,26 @@ for i = 2:Trials_back
     all_reward_his(:,i)      = circshift(all_reward',     [0, i-1]);
 end
 
-idx = 1:Trials_back:4*11;
-data = [reward_left_his reward_right_his no_reward_left_his no_reward_right_his];
+% idx = 1:Trials_back:4*11;
+% data = [reward_left_his reward_right_his no_reward_left_his no_reward_right_his];
+% B_temp = zeros(25, size(data,2));
+% 
+% parfor j = 1:25 % PARALLEL
+%     [B, FitInfo] = lasso(data,Firing, 'CV', 2, 'MaxIter', 1e3); %CV 4
+%     B_temp(j, :) = B(:, FitInfo.IndexMinMSE);
+% end
+% B_all = mean(B_temp);
+% %M = median(B_temp)
+% figure
+% errorbar(B_all,std(B_temp))
+% boxplot(B_temp)
+% hold on
+% plot(idx,zeros(numel(idx),1),'*')
+% title('reward left')
+% %lassoPlot(B,FitInfo,'PlotType','CV');
+% 
+idx = 1:Trials_back;
+data = [reward_left_his];
 B_temp = zeros(25, size(data,2));
 
 parfor j = 1:25 % PARALLEL
@@ -233,25 +252,24 @@ parfor j = 1:25 % PARALLEL
     B_temp(j, :) = B(:, FitInfo.IndexMinMSE);
 end
 
-
 B_all = mean(B_temp);
 %M = median(B_temp)
 figure
 errorbar(B_all,std(B_temp))
-boxplot(B_temp)
+%boxplot(B_temp)
 hold on
 plot(idx,zeros(numel(idx),1),'*')
-title('reward left - reward right - no reward left - no reward right')
+title('reward left')
 %lassoPlot(B,FitInfo,'PlotType','CV');
 
-idx         = (con == 0);
-con(idx)    = [];
-Firing(idx) = [];
+% idx         = (con == 0);
+% con(idx)    = [];
+% Firing(idx) = [];
 
-[~,~,~,AUC] = perfcurve(con,Firing,'1')
-[~,~,~,AUC] = perfcurve(con,Firing,'2')
-figure
-histogram(Firing(con == 1))
-hold on 
-histogram(Firing(con == 2))
-[D, P, SE] = rocarea(Firing(con == 1),Firing(con == 2),'bootstrap',100,'display',1)
+% [~,~,~,AUC] = perfcurve(con,Firing,'1')
+% [~,~,~,AUC] = perfcurve(con,Firing,'2')
+% figure
+% histogram(Firing(con == 1))
+% hold on 
+% histogram(Firing(con == 2))
+% [D, P, SE] = rocarea(Firing(con == 1),Firing(con == 2),'bootstrap',100,'display',1)

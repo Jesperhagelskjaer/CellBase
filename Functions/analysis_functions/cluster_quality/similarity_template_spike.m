@@ -1,6 +1,6 @@
 function [varargout] = similarity_template_spike(cellid,varargin)
 
-% add_analysis(@similarity_template_spike,1,'property_names',{'AUC','idx'},'arglist',{'rez','rezFinalK','whitening','n','method','mnr'});
+% add_analysis(@similarity_template_spike,1,'property_names',{'AUC','idx'},'arglist',{'rez','rezFinalK','whitening','n','method','svm','plotting',1});
 
 % add_analysis(@similarity_template_spike,0,'property_names',{'AUC','idx'},'arglist',{'rez','rezFinalK','whitening','n','cells',[250]});
 % delanalysis(@similarity_template_spike)
@@ -94,13 +94,8 @@ if load_data && ~error
     end
 end
 
-AUC     = -1;
-idx_sim = -1;
-
 if error
-    AUC     = nan;
-    idx_sim = nan;
-    dataW   = nan;
+    [AUC,idx_sim,dataW] = deal(nan);
 else
     range        = [-10:50];
     Idx          = rez.st(logical(rez.st(:,8)==cluster),1);
@@ -144,10 +139,11 @@ else
             % [SVMModel, info] = fitclinear(Data',Labels','ObservationsIn','columns','GradientTolerance',1e-8,'solver','sgd');
             % [label,score] = predict(SVMModel,Data);
             % cl = fitcsvm(Data,Labels,'KernelFunction','rbf','BoxConstraint',Inf,'OutlierFraction',0.01);
-            % cl = fitcsvm(Data,Labels,'KernelFunction','linear','BoxConstraint',Inf,'OutlierFraction',0.01);
+            
             if strcmpi(f.method,'svm')
-                cl = fitcsvm(Data,Labels,'KernelFunction','linear','OutlierFraction',0.01,'Standardize','on');
-                [label,score] = predict(cl,Data);
+                %cl = fitcsvm(Data,Labels,'KernelFunction','linear','OutlierFraction',0.01,'Standardize','on');
+                Mdl = fitcsvm(Data,Labels,'KernelFunction','linear','BoxConstraint',Inf,'OutlierFraction',0.01);
+                [label,score] = predict(Mdl,Data);
             elseif strcmpi(f.method,'mnr')
                 Data = zscore(Data);
                 [b,~,~] = mnrfit(Data,categorical(Labels),'model','hierarchical');
@@ -156,31 +152,45 @@ else
                 score = exp(sum(score + b(2:end)'.*Data(:,:),2));
                 label(logical(score > 1)) = 1;
             end
-            [~,~,~,AUC(j)] = perfcurve(Labels,score(:,1),'0');
+            [~,~,~,AUC(j)] = perfcurve(Labels,score(:,2),'1');
             if f.plotting
                 figure
                 if tt == 1
                     subplot(2,1,1)
-                    plot(Data,[],Labels)
+                    plot(Data,Labels,'*')
+                    xlim([0 4000])
                     subplot(2,1,2)
-                    plot(Data,[],label)
+                    plot(Data,label,'*')
+                    xlim([0 4000])
                 elseif  tt == 2
                     subplot(2,1,1)
                     scatter(Data(:,1),Data(:,2),1,Labels)
                     subplot(2,1,2)
+                    xlim([0 4000])
+                    ylim([0 4000])
                     scatter(Data(:,1),Data(:,2),1,label)
+                    xlim([0 4000])
+                    ylim([0 4000])
                 elseif tt >= 3 %(!) make better
                     subplot(2,1,1)
                     scatter3(Data(:,1),Data(:,2),Data(:,3),1,Labels)
+                    xlim([0 4000])
+                    ylim([0 4000])
+                    zlim([0 4000])
                     subplot(2,1,2)
                     scatter3(Data(:,1),Data(:,2),Data(:,3),1,label)
+                    xlim([0 4000])
+                    ylim([0 4000])
+                    zlim([0 4000])
+                    
                 end
                 figure
                 Idx = [cluster; idx_sim];
-                for i = 1:length(Idx)
-                    subplot(2,2,i)
-                    surf(Template_all(14:29,:,Idx(i)))
-                end
+%                 for i = 1:length(Idx)
+%                     subplot(2,2,i)
+%                     surf(Template_all(14:29,:,Idx(i)))
+%                 end
+                    
                 figure
                 surf(Template)
                 
@@ -196,19 +206,7 @@ end
 
 varargout{1}.AUC = AUC;
 varargout{1}.idx = idx_sim;
-POS_old = POS;
+POS_old          = POS;
 end
 
-%legacy
-%         if i == 1
-%             full_name          = fullfile(path,sprintf('100_CH%d.continuous',channel_start));
-%             tic
-%             [d, timestamps, ~] = load_open_ephys_data_faster(full_name);
-%             toc
-%             dataW = zeros(length(timestamps),32,'single');
-%             d = single(d);
-%         else
-%             tic
-%             [d] = load_ch_mex([path,'\'],num2str(channel));
-%             toc
-%         end
+

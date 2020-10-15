@@ -11,43 +11,56 @@ global TheMatrix
 global CELLIDLIST
 persistent f
 
+method       = varargin{1};
+
 if (cellid == 0)
-    method       = varargin{1};
     varargin(1)  = [];
     varargin     = [varargin{:}];
     
     prs = inputParser;
     
     addParameter(prs,'path',getpref('cellbase').datapath,@ischar) %
-    addParameter(prs,'Trials_back',11,@(x) isscalar(x) && x > 0)
+    addParameter(prs,'Trials_back',11,@(x) isscalar(x) && isnumeric(x) && x > 0)
     parse(prs,varargin{:})
     
     f = prs.Results;
-    checking_choice_and_reward(method)
+    
     varargout{1}.prs = prs;
     return
 end
 
 [r,s,~,~]  = cellid2tags(cellid);
 idx_neuron = findcellstr(CELLIDLIST',cellid); % CELLIDLIST must be column vector
-POS        = findcellpos('animal',r,'session',s);
+POS        = findcellpos('animal',r,'session',s); 
 
 [R_trial,C_trial,NR_trial]       = deal([]);
-if (POS(1) == idx_neuron)
-    CH  = TheMatrix{POS(1),findanalysis('CH')};
-    RH  = TheMatrix{POS(1),findanalysis('RH')};
-    NRH = TheMatrix{POS(1),findanalysis('NRH')};
-    CH(isnan(CH))             = [];
-    RH(isnan(RH))             = [];
-    NRH(isnan(NRH))           = [];
- 
-    [R_trial, NR_trial, C_trial] = Get_history_matrices(RH, CH, NRH, f.Trials_back);
+if (POS(1) == idx_neuron)   
+    Idx = findanalysis(@choice_and_reward);
+    if ~all(Idx)
+        fprintf("addanalysis(@Choice_and_reward,'property_names',{'CH','RH','NR'})\n")
+    else
+        CH  = TheMatrix{POS(1),findanalysis('CH')};
+        RH  = TheMatrix{POS(1),findanalysis('RH')};
+        NRH = TheMatrix{POS(1),findanalysis('NRH')};
+        CH(isnan(CH))             = []; 
+        RH(isnan(RH))             = []; 
+        NRH(isnan(NRH))           = [];
+        % TRIALS
+        [R_trial, NR_trial, C_trial] = Get_history_matrices(RH, CH, NRH, f.Trials_back);
+    end
 end
 
 
 varargout{1}.R_trial        = R_trial;
 varargout{1}.NR_trial       = NR_trial;
 varargout{1}.C_trial        = C_trial;
-end
 
+end
+% 
+%     [~, ~, ~, CenterPortExit, ~, ~] = GET_TRIAL_EVENTS_FROM_FILE_EXTENDED(fullfile(f.path,r,s)); %(!)
+%     if isempty(RH)
+%         status = 1;
+%     elseif length(RH) ~= length(CenterPortExit)
+%         status = nan;
+%     end
 

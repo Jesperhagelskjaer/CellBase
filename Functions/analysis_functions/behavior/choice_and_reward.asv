@@ -40,3 +40,17 @@ varargout{1}.NRH              = NRH;
 varargout{1}.Indices_to_erase = Indices_to_erase;
 end
 
+% [r,s,~,~]  = cellid2tags(cellid);
+% idx_neuron = findcellstr(CELLIDLIST',cellid); % CELLIDLIST must be column vector
+% if idx_neuron > 1
+%     cellid_2    = CELLIDLIST(idx_neuron-1);
+%     [r2,s2,~,~] = cellid2tags(cellid_2{1});
+% else
+%     r2 = '';s2 = '';
+% end
+%
+% [RH, NRH, CH, Indices_to_erase] = deal([]);
+% if ~(strcmp(r,r2) && strcmp(s,s2))
+%     TE = loadcb(cellid,'TrialEvents');
+%     [RH, CH, NRH, Indices_to_erase] = Collect_Reward_Choice_History(TE);
+% end
