@@ -1,4 +1,4 @@
-function [lastcolumn,NewAnal] = columns_idx(g,ANALYSES,CELLIDLIST,TheMatrix)
+function [lastcolumn,NewAnal] = columns_idx(funhandle,g,ANALYSES,CELLIDLIST,TheMatrix)
 
 
 lastcolumn = 0;
@@ -16,7 +16,10 @@ if g.add == 1
             error('addanalysis:databaseError','ADDANALYSIS: Internal database inconsistency!')
         end
     end
-    
+elseif g.add == 99
+    [lastcolumn, prevanal] = findanalysis(funhandle,'position');  %#ok<ASGLU> % look for analysis in CellBase
+    lastcolumn = lastcolumn - 1;
+    NewAnal = [];
 end
 
 end

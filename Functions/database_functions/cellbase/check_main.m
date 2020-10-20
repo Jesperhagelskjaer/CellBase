@@ -7,7 +7,7 @@ check_analysis(funhandle,ANALYSES,g)
 check_property_name(Lpropnames,g)
 
 % Find the position for the new analysis
-[lastcolumn,NewAnal] = columns_idx(g,ANALYSES,CELLIDLIST,TheMatrix);
+[lastcolumn,NewAnal] = columns_idx(funhandle,g,ANALYSES,CELLIDLIST,TheMatrix);
 
 columns = lastcolumn+1:lastcolumn+Lpropnames;  % allocate columns for new properties
 

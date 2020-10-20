@@ -25,12 +25,12 @@ if (cellid == 0)
 end
 
 [r,s,~,~]  = cellid2tags(cellid);
-idx = findcellstr(CELLIDLIST',cellid); % CELLIDLIST must be column vector
-POS = findcellpos('animal',r,'session',s);
+idx        = findcellstr(CELLIDLIST',cellid); % CELLIDLIST must be column vector
+POS        = findcellpos('animal',r,'session',s);
 
 [RH, NRH, CH, Indices_to_erase] = deal([]);
-if POS(1) ==  idx
-    TE = loadcb(cellid,'TrialEvents');
+if POS(1) == idx
+    TE                              = loadcb(cellid,'TrialEvents');
     [RH, CH, NRH, Indices_to_erase] = Collect_Reward_Choice_History(TE);
 end
 

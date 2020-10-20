@@ -31,7 +31,7 @@ switch f.transform
     case 'scale'
         AUC = 2 * (AUC - 0.5);   % 'scale'
 end
-
+P = -1;
 % Bootstrap
 if f.bootstrap > 0
     myStatistic = @(x1,x2) mean(x1)-mean(x2);
@@ -43,8 +43,6 @@ if f.bootstrap > 0
     end
     %CI = prctile(bootstrapStat,[100*0.05/2,100*(1-0.05/2)]);
     %H = CI(1)>0 | CI(2)<0;
-end
-
 if 0 > mean(bootstrapStat)
     idx = find(0 > sort(bootstrapStat),1,'last'); %(!) looks only at one side
 else
@@ -56,6 +54,9 @@ if isempty(idx)
 else
     P = idx/numel(bootstrapStat);
 end
+
+end
+
 
 % Plot
 if f.display

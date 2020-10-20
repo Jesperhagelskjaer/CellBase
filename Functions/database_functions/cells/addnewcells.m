@@ -1,4 +1,4 @@
-function addnewcells(varargin)
+function NUM_newcellids = addnewcells(varargin)
 %ADDNEWCELLS   Add new cells to CellBase.
 %   NM = ADDNEWCELLS adds new cells found in Cellbase directory structure
 %   to CellBase calling FINDALLCELLS. It calls ADDCELL, which also performs
@@ -97,6 +97,7 @@ cellbase_fname = getpref('cellbase','fname');
 assignin('base','TheMatrix',TheMatrix)
 assignin('base','CELLIDLIST',CELLIDLIST)
 save(cellbase_fname,'TheMatrix','ANALYSES','CELLIDLIST')
+
 end
 
 %legacy

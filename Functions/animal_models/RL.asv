@@ -163,13 +163,13 @@ all_reward      = reward_left + reward_right;
 
 
 %condition = {'no_reward',1,3,2};      
-%condition = {'reward_right',1,3,20};
+%condition = {'reward_right',1,3,2};
 %condition = {'reward_right',1,3,0.5}; 
 %condition = {'reward_left',1,3,2};
 %condition = {'reward_left',1,3,0.5};
 %condition  = {'no_reward_right',1,3,3};
 condition  = {'no_reward_right',1,3,2;...
-             'reward_right',1,3,30};
+             'reward_right',1,3,3};
 
 %condition = {'reward_left',1,3,2};
 %condition = {'reward_left',1,3,0.5};
@@ -228,120 +228,120 @@ for i = 2:Trials_back
     all_reward_his(:,i)      = circshift(all_reward',     [0, i-1]);
 end
 
-idx = 1:Trials_back:4*11;
-data = [reward_left_his reward_right_his no_reward_left_his no_reward_right_his];
-B_temp = zeros(25, size(data,2));
-parfor j = 1:25 % PARALLEL
-    [B, FitInfo] = lasso(data,Firing, 'CV', 2, 'MaxIter', 1e3); %CV 4
-    B_temp(j, :) = B(:, FitInfo.IndexMinMSE);
-end
-%B_all = mean(B_temp);
-B_all = median(B_temp);
-figure
-plot(B_all)
-%errorbar(B_all,std(B_temp))
-%boxplot(B_temp)
-hold on
-plot(idx,zeros(numel(idx),1),'*')
-title('reward left')
-%lassoPlot(B,FitInfo,'PlotType','CV');
-
-% idx = 1:Trials_back;
-% data = [reward_left_his];
+% idx = 1:Trials_back:4*11;
+% data = [reward_left_his reward_right_his no_reward_left_his no_reward_right_his];
+% B_temp = zeros(25, size(data,2));
+% parfor j = 1:25 % PARALLEL
+%     [B, FitInfo] = lasso(data,Firing, 'CV', 2, 'MaxIter', 1e3); %CV 4
+%     B_temp(j, :) = B(:, FitInfo.IndexMinMSE);
+% end
+% %B_all = mean(B_temp);
+% B_all = median(B_temp);
+% figure
+% plot(B_all)
+% %errorbar(B_all,std(B_temp))
+% %boxplot(B_temp)
+% hold on
+% plot(idx,zeros(numel(idx),1),'*')
+% title('reward left')
+% %lassoPlot(B,FitInfo,'PlotType','CV');
+% 
+% % idx = 1:Trials_back;
+% % data = [reward_left_his];
+% % B_temp = zeros(25, size(data,2));
+% % 
+% % parfor j = 1:25 % PARALLEL
+% %     [B, FitInfo] = lasso(data,Firing, 'CV', 2, 'MaxIter', 1e3); %CV 4
+% %     B_temp(j, :) = B(:, FitInfo.IndexMinMSE);
+% % end
+% % 
+% % B_all = mean(B_temp);
+% % %M = median(B_temp)
+% % figure
+% % errorbar(B_all,std(B_temp))
+% % %boxplot(B_temp)
+% % hold on
+% % plot(idx,zeros(numel(idx),1),'*')
+% % title('reward left')
+% % %lassoPlot(B,FitInfo,'PlotType','CV');
+% 
+% % idx         = (con == 0);
+% % con(idx)    = [];
+% % Firing(idx) = [];
+% 
+% % [~,~,~,AUC] = perfcurve(con,Firing,'1')
+% % [~,~,~,AUC] = perfcurve(con,Firing,'2')
+% % figure
+% % histogram(Firing(con == 1))
+% % hold on 
+% % histogram(Firing(con == 2))
+% % [D, P, SE] = rocarea(Firing(con == 1),Firing(con == 2),'bootstrap',100,'display',1)
+% 
+% idx = 1:Trials_back:5*11;
+% data = [a_left_his reward_left_his reward_right_his no_reward_left_his no_reward_right_his];
+% B_temp = zeros(25, size(data,2));
+% 
+% parfor j = 1:25 % PARALLEL
+%     data1 = data + (rand(size(data,1),size(data,2)))/10;
+%     [B, FitInfo] = lasso(data1,Firing, 'CV', 2, 'MaxIter', 1e3); %CV 4
+%     B_temp(j, :) = B(:, FitInfo.IndexMinMSE);
+% end
+% B_all = mean(B_temp);
+% %M = median(B_temp)
+% figure
+% plot(B_all)
+% %errorbar(B_all,std(B_temp))
+% %boxplot(B_temp)
+% hold on
+% plot(idx,zeros(numel(idx),1),'*')
+% title('reward left')
+% %lassoPlot(B,FitInfo,'PlotType','CV');
+% 
+% idx = 1:Trials_back:4*11;
+% data = [reward_left_his reward_right_his no_reward_left_his no_reward_right_his];
+% B_temp = zeros(25, size(data,2));
+% 
+% parfor j = 1:25 % PARALLEL
+%     data1 = data + (rand(size(data,1),size(data,2))-0.5)/100000;
+%     [B, FitInfo] = lasso(data1,Firing, 'CV', 2, 'MaxIter', 1e3); %CV 4
+%     B_temp(j, :) = B(:, FitInfo.IndexMinMSE);
+% end
+% %B_all = mean(B_temp);
+% B_all = median(B_temp);
+% figure
+% plot(B_all)
+% %errorbar(B_all,std(B_temp))
+% %boxplot(B_temp)
+% hold on
+% plot(idx,zeros(numel(idx),1),'*')
+% title('reward left')
+% %lassoPlot(B,FitInfo,'PlotType','CV');
+% 
+% idx = 1:Trials_back:4*11;
+% data = [reward_left_his reward_right_his no_reward_left_his no_reward_right_his];
 % B_temp = zeros(25, size(data,2));
 % 
 % parfor j = 1:25 % PARALLEL
 %     [B, FitInfo] = lasso(data,Firing, 'CV', 2, 'MaxIter', 1e3); %CV 4
 %     B_temp(j, :) = B(:, FitInfo.IndexMinMSE);
 % end
-% 
-% B_all = mean(B_temp);
-% %M = median(B_temp)
+% %B_all = mean(B_temp);
+% B_all = median(B_temp);
 % figure
-% errorbar(B_all,std(B_temp))
+% plot(B_all)
+% %errorbar(B_all,std(B_temp))
 % %boxplot(B_temp)
 % hold on
 % plot(idx,zeros(numel(idx),1),'*')
 % title('reward left')
 % %lassoPlot(B,FitInfo,'PlotType','CV');
-
-% idx         = (con == 0);
-% con(idx)    = [];
-% Firing(idx) = [];
-
-% [~,~,~,AUC] = perfcurve(con,Firing,'1')
-% [~,~,~,AUC] = perfcurve(con,Firing,'2')
-% figure
-% histogram(Firing(con == 1))
-% hold on 
-% histogram(Firing(con == 2))
-% [D, P, SE] = rocarea(Firing(con == 1),Firing(con == 2),'bootstrap',100,'display',1)
-
-idx = 1:Trials_back:5*11;
-data = [a_left_his reward_left_his reward_right_his no_reward_left_his no_reward_right_his];
-B_temp = zeros(25, size(data,2));
-
-parfor j = 1:25 % PARALLEL
-    data1 = data + (rand(size(data,1),size(data,2)))/10;
-    [B, FitInfo] = lasso(data1,Firing, 'CV', 2, 'MaxIter', 1e3); %CV 4
-    B_temp(j, :) = B(:, FitInfo.IndexMinMSE);
-end
-B_all = mean(B_temp);
-%M = median(B_temp)
-figure
-plot(B_all)
-%errorbar(B_all,std(B_temp))
-%boxplot(B_temp)
-hold on
-plot(idx,zeros(numel(idx),1),'*')
-title('reward left')
-%lassoPlot(B,FitInfo,'PlotType','CV');
-
-idx = 1:Trials_back:4*11;
-data = [reward_left_his reward_right_his no_reward_left_his no_reward_right_his];
-B_temp = zeros(25, size(data,2));
-
-parfor j = 1:25 % PARALLEL
-    data1 = data + (rand(size(data,1),size(data,2))-0.5)/100000;
-    [B, FitInfo] = lasso(data1,Firing, 'CV', 2, 'MaxIter', 1e3); %CV 4
-    B_temp(j, :) = B(:, FitInfo.IndexMinMSE);
-end
-%B_all = mean(B_temp);
-B_all = median(B_temp);
-figure
-plot(B_all)
-%errorbar(B_all,std(B_temp))
-%boxplot(B_temp)
-hold on
-plot(idx,zeros(numel(idx),1),'*')
-title('reward left')
-%lassoPlot(B,FitInfo,'PlotType','CV');
-
-idx = 1:Trials_back:4*11;
-data = [reward_left_his reward_right_his no_reward_left_his no_reward_right_his];
-B_temp = zeros(25, size(data,2));
-
-parfor j = 1:25 % PARALLEL
-    [B, FitInfo] = lasso(data,Firing, 'CV', 2, 'MaxIter', 1e3); %CV 4
-    B_temp(j, :) = B(:, FitInfo.IndexMinMSE);
-end
-%B_all = mean(B_temp);
-B_all = median(B_temp);
-figure
-plot(B_all)
-%errorbar(B_all,std(B_temp))
-%boxplot(B_temp)
-hold on
-plot(idx,zeros(numel(idx),1),'*')
-title('reward left')
-%lassoPlot(B,FitInfo,'PlotType','CV');
 % 
-idx = 1:Trials_back:5*11;
-data = [a_left_his reward_left_his reward_right_his no_reward_left_his no_reward_right_his];
+idx = 1:Trials_back:4*11;
+data = [reward_left_his reward_right_his no_reward_left_his no_reward_right_his];
 B_temp = zeros(25, size(data,2));
 
 parfor j = 1:25 % PARALLEL
-    [B, FitInfo] = lassoglm(data,Firing,'poisson','CV', 2); %CV 4
+    [B, FitInfo] = lassoglm(data,Firing,'Link','log', 'CV', 2); %CV 4
     B_temp(j, :) = B(:, FitInfo.IndexMinDeviance);
 end
 %B_all = mean(B_temp);

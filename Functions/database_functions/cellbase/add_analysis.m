@@ -58,7 +58,7 @@ for cellnum = range %
         prs_value = property_values;
     end
        
-    if (cellnum ~= 0 && g.add == 1)
+    if (cellnum ~= 0 && (g.add == 1 || g.add == 99))
         TheMatrix(cellnum,columns) = holder;
     elseif (cellnum  ~= 0 && g.add == 0)
         print_value(Lpropnames,holder,g)

@@ -1,6 +1,6 @@
 function [] = saving_data(g,TheMatrix,ANALYSES,CELLIDLIST)
 
-if (g.add == 1)
+if (g.add == 1) || (g.add == 99)
     assignin('base','TheMatrix',TheMatrix)
     assignin('base','ANALYSES',ANALYSES)
     cb = getpref('cellbase','fname');

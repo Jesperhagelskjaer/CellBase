@@ -2,7 +2,7 @@ function [varargout] = similarity_template_spike(cellid,varargin)
 
 % add_analysis(@similarity_template_spike,1,'property_names',{'AUC','idx'},'arglist',{'rez','rezFinalK','whitening','n','method','svm','plotting',1});
 
-% add_analysis(@similarity_template_spike,0,'property_names',{'AUC','idx'},'arglist',{'rez','rezFinalK','whitening','n','cells',[250]});
+% add_analysis(@similarity_template_spike,99,'property_names',{'AUC','idx'},'arglist',{'rez','rezFinalK','cells',[2:400],'plotting',0});
 % delanalysis(@similarity_template_spike)
 %To Do
 %check up on cluster identity
@@ -12,10 +12,10 @@ persistent dataW
 persistent f
 persistent POS_old
 
-method       = varargin{1};
+
 
 if (cellid == 0)
-    
+    method       = varargin{1};
     varargin(1)  = [];
     varargin     = [varargin{:}];
     
@@ -30,7 +30,7 @@ if (cellid == 0)
     addParameter(prs,'rez','rezFinal')
     addParameter(prs,'whitening','n',@ischar)
     addParameter(prs,'NCC_threshold',0.6)
-    addParameter(prs,'voltage_threshold',35)
+    addParameter(prs,'voltage_threshold',0,@(x) x > 0 && isscalar(x))
     addParameter(prs,'plotting',0)
     addParameter(prs,'range',[-5:7])
     addParameter(prs,'method','svm',@ischar)
@@ -68,11 +68,12 @@ load(fullfile(f.path,r,s,f.rez));
 path = fullfile(f.path,r,s);
 Template_all = rez.M_template;
 
-
+tic
 if load_data && ~error
     [b1, a1] = butter(3, [f.fshigh/f.fs,f.slow/f.fs]*2, 'bandpass');
     [channel_start] = find_number_of_files(path)+1; %when channels start with at 17 but the tetrode will start at 1
     i = 1;
+    
     for channel = channel_start:32+channel_start-1
         if i == 1
             [d] = load_ch_mex([path,'\'],num2str(channel));
@@ -93,7 +94,10 @@ if load_data && ~error
         [dataW] = whitening_the_data(dataW);
     end
 end
+toc
+tic
 
+[AUC,idx_sim] = deal(-1);
 if error
     [AUC,idx_sim,dataW] = deal(nan);
 else
@@ -104,10 +108,14 @@ else
     for i = 1:numel(Idx)
         Template_spk(:,:,i)      = dataW(Idx(i)+range,:);
     end
-    
+    if -f.voltage_threshold == 0
+        voltage_threshold = std(dataW)*3;
+    else
+        voltage_threshold  = f.voltage_threshold;
+    end
     Template       = mean(Template_spk,3);
     Template_cl    = Template;
-    Template_cl(logical(Template_cl > -f.voltage_threshold & Template_cl < f.voltage_threshold)) = 0;
+    Template_cl(logical(Template_cl > -voltage_threshold & Template_cl < voltage_threshold)) = 0;
     channals_nzero = any(Template_cl ~= 0);
     tt             = sum(channals_nzero);
     
@@ -128,82 +136,80 @@ else
         
         AUC = nan(length(idx_sim),1);
         holder_tem = Template_cl(11+range,channals_nzero);
-        for j = 1:length(idx_sim)
-            Idx = rez.st(logical(rez.st(:,8)==idx_sim(j)),1);
-            score_sub = nan(numel(Idx),sum(channals_nzero));
-            for i = 1:numel(Idx)
-                score_sub(i,:) = sum((dataW(Idx(i)+range,channals_nzero) - holder_tem).^2);
-            end
-            Labels = [zeros(numel(score_sub(:,1)),1);ones(numel(main_cl(:,1)),1)];
-            Data   = [score_sub;main_cl];
-            % [SVMModel, info] = fitclinear(Data',Labels','ObservationsIn','columns','GradientTolerance',1e-8,'solver','sgd');
-            % [label,score] = predict(SVMModel,Data);
-            % cl = fitcsvm(Data,Labels,'KernelFunction','rbf','BoxConstraint',Inf,'OutlierFraction',0.01);
-            
-            if strcmpi(f.method,'svm')
-                %cl = fitcsvm(Data,Labels,'KernelFunction','linear','OutlierFraction',0.01,'Standardize','on');
-                Mdl = fitcsvm(Data,Labels,'KernelFunction','linear','BoxConstraint',Inf,'OutlierFraction',0.01);
-                [label,score] = predict(Mdl,Data);
-            elseif strcmpi(f.method,'mnr')
-                Data = zscore(Data);
-                [b,~,~] = mnrfit(Data,categorical(Labels),'model','hierarchical');
-                label = zeros(size(Data,1),1);
-                score = ones(size(Data,1),1)*b(1);
-                score = exp(sum(score + b(2:end)'.*Data(:,:),2));
-                label(logical(score > 1)) = 1;
-            end
-            [~,~,~,AUC(j)] = perfcurve(Labels,score(:,2),'1');
-            if f.plotting
-                figure
-                if tt == 1
-                    subplot(2,1,1)
-                    plot(Data,Labels,'*')
-                    xlim([0 4000])
-                    subplot(2,1,2)
-                    plot(Data,label,'*')
-                    xlim([0 4000])
-                elseif  tt == 2
-                    subplot(2,1,1)
-                    scatter(Data(:,1),Data(:,2),1,Labels)
-                    subplot(2,1,2)
-                    xlim([0 4000])
-                    ylim([0 4000])
-                    scatter(Data(:,1),Data(:,2),1,label)
-                    xlim([0 4000])
-                    ylim([0 4000])
-                elseif tt >= 3 %(!) make better
-                    subplot(2,1,1)
-                    scatter3(Data(:,1),Data(:,2),Data(:,3),1,Labels)
-                    xlim([0 4000])
-                    ylim([0 4000])
-                    zlim([0 4000])
-                    subplot(2,1,2)
-                    scatter3(Data(:,1),Data(:,2),Data(:,3),1,label)
-                    xlim([0 4000])
-                    ylim([0 4000])
-                    zlim([0 4000])
-                    
+        if isempty(AUC)
+            [AUC,idx_sim] = deal(-1);
+        else
+            for j = 1:length(idx_sim)
+                Labels = [];
+                Idx = rez.st(logical(rez.st(:,8)==idx_sim(j)),1);
+                score_sub = nan(numel(Idx),sum(channals_nzero));
+                for i = 1:numel(Idx)
+                    score_sub(i,:) = sum((dataW(Idx(i)+range,channals_nzero) - holder_tem).^2);
                 end
-                figure
-                Idx = [cluster; idx_sim];
-%                 for i = 1:length(Idx)
-%                     subplot(2,2,i)
-%                     surf(Template_all(14:29,:,Idx(i)))
-%                 end
-                    
-                figure
-                surf(Template)
                 
-                %legend(['ref';'main'])
-                close all
+                Labels(:,1) = [zeros(numel(score_sub(:,1)),1);ones(numel(main_cl(:,1)),1)];
+                Data   = [score_sub;main_cl];
+                if strcmpi(f.method,'svm')
+                    %                 tic
+                    %                 c = cvpartition(Labels(:,1),'KFold',10);
+                    %                 info = struct('UseParallel',true,'CVPartition',c);
+                    %                 Mdl = fitcsvm(Data,Labels(:,1),'KernelFunction','linear','OutlierFraction',0.01,'Standardize','on','OptimizeHyperparameters','none','HyperparameterOptimizationOptions',info);
+                    %                 %Mdl = fitcsvm(Data,Labels,'KernelFunction','linear','BoxConstraint',Inf,'OutlierFraction',0.01);
+                    %                 [Labels(:,2),score] = predict(Mdl,Data);
+                    %                 toc
+                    tic
+                    info = struct('UseParallel',true);
+                    Mdl = fitcsvm(Data,Labels(:,1),'KernelFunction','linear','OutlierFraction',0.01,'Standardize','on','OptimizeHyperparameters','none','HyperparameterOptimizationOptions',info);
+                    %Mdl = fitcsvm(Data,Labels,'KernelFunction','linear','BoxConstraint',Inf,'OutlierFraction',0.01);
+                    [Labels(:,2),score] = predict(Mdl,Data);
+                    toc
+                    
+                elseif strcmpi(f.method,'mnr')
+                    Data = zscore(Data);
+                    [b,~,~] = mnrfit(Data,categorical(Labels),'model','hierarchical');
+                    Labels(:,2) = zeros(size(Data,1),1);
+                    score = ones(size(Data,1),1)*b(1);
+                    score = exp(sum(score + b(2:end)'.*Data(:,:),2));
+                    %label(logical(score > 1)) = 1;
+                    %Labels((logical(score > 1)),2) = 1;
+                end
+                [~,~,~,AUC(j)] = perfcurve(Labels(:,1) ,score(:,2),'1');
+                if f.plotting
+                    TF = ~any(isoutlier(Data)');
+                    figure
+                    for m = 1:2
+                        if tt == 1
+                            subplot(2,1,m)
+                            plot(Data,Labels(:,m),'*')
+                            %xlim([0 1])
+                        elseif  tt == 2
+                            subplot(2,1,m)
+                            scatter3(Data(TF,1)/max(Data(TF,1)),Data(TF,2)/max(Data(TF,2)),Data(TF,3)/max(Data(TF,3)),30,Labels(TF,m))
+                            xlim([0 1])
+                            ylim([0 1])
+                        elseif tt >= 3 %(!) make better
+                            subplot(2,1,m)
+                            scatter3(Data(TF,1)/max(Data(TF,1)),Data(TF,2)/max(Data(TF,2)),Data(TF,3)/max(Data(TF,3)),30,Labels(TF,m))
+                            xlim([0 1])
+                            ylim([0 1])
+                            zlim([0 1])
+                        end
+                    end
+                    figure
+                    Idx = [cluster; idx_sim];
+                    row = ceil(numel(Idx)/2);
+                    for i = 1:length(Idx)
+                        subplot(2,row,i)
+                        surf(Template_all(14:29,:,Idx(i)))
+                    end
+                    
+                    close all
+                end
             end
         end
-    else
-        AUC     = -1;
-        idx_sim = -1;
     end
 end
-
+toc
 varargout{1}.AUC = AUC;
 varargout{1}.idx = idx_sim;
 POS_old          = POS;
