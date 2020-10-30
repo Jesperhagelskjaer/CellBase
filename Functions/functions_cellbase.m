@@ -1,11 +1,13 @@
 %The functions created by Jesper Hagelskjær
 % add_analysis
-% average_firing_rate          (done)!
+% average_firing_rate          (done)
+% AUC_reward_choice            (done)
 % Baiting                      (done)
 % behaviour_neurons_kernels    (done)
 % behaviour_kernels            (done)
 % cellid2rezFile               (done)
 % choice_and_reward            (done)! 
+
 % history_reward_choice        (done)!   
 % IC_refractary_period         (done)
 % NSSD_simularity_score        (done) 
@@ -43,6 +45,11 @@
 
     
     
+%% 
+
+    %add_analysis(@AUC_reward_choice,0,'property_names',{'AUC_past_choice_r', 'AUC_past_reward_right', 'AUC_past_choice_nr', 'AUC_past_reward_left','AUC_next_choice', 'AUC_next_choice_control'});
+
+
 %% 
 
 
