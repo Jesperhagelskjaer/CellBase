@@ -41,7 +41,7 @@ Ly = length(y);
 % Bootstrap
 if f.bootstrap > 0
     z = [x; y];
-    Dboot = nan(1,g.bootstrap);
+    Dboot = nan(1,f.bootstrap);
     for k = 1:f.bootstrap
         order = round(rand(1,Lx+Ly)*(Lx+Ly-1))+1;  % resample
         px = z(order(1:Lx));

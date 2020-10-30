@@ -1,25 +1,42 @@
-function [varargout] = AUC_reward_choice(cellid,path)
+  function [varargout] = AUC_reward_choice(cellid,varargin)
+% function [AUC_past_choice_r, AUC_past_choice_r_P,AUC_past_reward_right,AUC_past_reward_right_P] = AUC_reward_choice_test(cellid,path)
+% addanalysis(@AUC_reward_choice,'property_names',{'AUC_past_choice_r', 'AUC_past_reward_right', 'AUC_past_choice_nr', 'AUC_past_reward_left','AUC_next_choice', 'AUC_next_choice_control'},'mandatory',{'O:\ST_Duda\Maria\CellBaseFreeChoiceBaitBlock'})
+% addanalysis(@AUC_reward_choice,'property_names',{'AUC_past_choice_r','AUC_past_choice_r_P','AUC_past_choice_nr','AUC_past_choice_nr_P',...
+...'AUC_past_reward_right','AUC_past_reward_right_P', 'AUC_past_reward_left','AUC_past_reward_left_P','AUC_next_choice','AUC_next_choice_P',
+...'AUC_next_choice_control','AUC_next_choice_control_P'},'mandatory',{'O:\ST_Duda\Maria\CellBaseFreeChoiceBaitBlock'})
 % Compute how neurons are selective for the last reward but not choice,
 % and vice-versa.
-% addanalysis(@AUC_reward_choice,'property_names',{'AUC_past_choice_r','AUC_past_reward_right'},'mandatory',{'D:\recording'})
+
+%add_analysis(@AUC_reward_choice,0,'property_names',{'AUC_past_choice_r'});
 
 % delanalysis(@AUC_reward_choice)
 
 % Author: Junior Samuel López Yépez - February/2020 (last update)
 % changed JH 2020_06_30
 % Approx. run-time with current data of 5 animals: 60 minutes
-
 global TheMatrix
 global CELLIDLIST
-prs = inputParser;
-addRequired(prs,'cellid',@(cellid) iscellid((cellid)) || (cellid) == 0)  % cell ID
-addRequired(prs,'path',@ischar) % cell ID
-parse(prs,cellid,path)
+persistent f
 
-if (prs.Results.cellid == 0)
+
+
+if (cellid == 0)
+    method       = varargin{1};
+    varargin(1)  = [];
+    varargin     = [varargin{:}];  
+    prs          = inputParser;
+    
+    addParameter(prs,'path',getpref('cellbase').datapath,@ischar) %
+     addParameter(prs,'bootstrap',1000,@(x) isscalar(x) && x > 0) %
+    parse(prs,varargin{:})
+    
+    f = prs.Results;
+    
     varargout{1}.prs = prs;
     return
 end
+
+N = f.bootstrap;
 
 
 [r,s,~,~] = cellid2tags(cellid);

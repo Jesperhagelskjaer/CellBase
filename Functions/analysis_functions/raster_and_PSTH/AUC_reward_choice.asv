@@ -1,4 +1,12 @@
-function [varargout] = AUC_reward_choice(cellid,varargin)
+  function [varargout] = AUC_reward_choice(cellid,varargin)
+% function [AUC_past_choice_r, AUC_past_choice_r_P,AUC_past_reward_right,AUC_past_reward_right_P] = AUC_reward_choice_test(cellid,path)
+% addanalysis(@AUC_reward_choice,'property_names',{'AUC_past_choice_r', 'AUC_past_reward_right', 'AUC_past_choice_nr', 'AUC_past_reward_left','AUC_next_choice', 'AUC_next_choice_control'},'mandatory',{'O:\ST_Duda\Maria\CellBaseFreeChoiceBaitBlock'})
+% addanalysis(@AUC_reward_choice,'property_names',{'AUC_past_choice_r','AUC_past_choice_r_P','AUC_past_choice_nr','AUC_past_choice_nr_P',...
+...'AUC_past_reward_right','AUC_past_reward_right_P', 'AUC_past_reward_left','AUC_past_reward_left_P','AUC_next_choice','AUC_next_choice_P',
+...'AUC_next_choice_control','AUC_next_choice_control_P'},'mandatory',{'O:\ST_Duda\Maria\CellBaseFreeChoiceBaitBlock'})
+% Compute how neurons are selective for the last reward but not choice,
+% and vice-versa.
+
 %add_analysis(@AUC_reward_choice,0,'property_names',{'AUC_past_choice_r', 'AUC_past_reward_right', 'AUC_past_choice_nr', 'AUC_past_reward_left','AUC_next_choice', 'AUC_next_choice_control'});
 
 % delanalysis(@AUC_reward_choice)

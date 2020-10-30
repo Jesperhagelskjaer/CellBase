@@ -31,7 +31,6 @@ if (cellid == 0)
     if any(strcmp(method,'AUC')) || any(strcmp(method,'AUC_bootstr'))
         addParameter(prs,'bootstrap',0,@(x) isscalar(x) && x > 0)   % size of bootstrap sample
         addParameter(prs,'transform','none',@(s)ismember(s,{'none' 'swap' 'scale'}))   % rescaling
-
     end
     
     parse(prs,varargin{:})
