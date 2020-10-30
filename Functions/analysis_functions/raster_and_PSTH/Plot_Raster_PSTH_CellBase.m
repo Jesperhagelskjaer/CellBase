@@ -33,7 +33,7 @@ allcells = listtag('cells');
 for icell = 82 %[82 85 90]; %1:length(allcells)
 %     try
 cellid = allcells(icell);
-TrigName = 'CenterPortLightOff'; %'StimulusOn'; %'CuePokeInTime';%'WaterPortIn' 'CuePokeInTimeLast';'CenterPortLightOff'
+TrigName = 'CenterPortEntry'; %'StimulusOn'; %'CuePokeInTime';%'WaterPortIn' 'CuePokeInTimeLast';'CenterPortLightOff'
 SEvent =  'CenterPortExit';%'SidePortEntry' ;%'CuePokeInTime';  % 'WaterPortIn' 'CuePokeInTimeLast';
 % TE = loadcb(cellid(icell),'TrialEvents');
 loadcb(allcells(icell),'TrialEvents')
@@ -60,7 +60,7 @@ PSTHstd = 'off';
  % parts='#WaterValveDur';
 
 %  ShEvent = {{'CenterPortExit','CenterPortEntry','StimulusOn'}};
-  ShEvent = {{'CenterPortExit','CenterPortEntry', 'CenterPortLightOff'}};
+  ShEvent = {{'CenterPortExit','CenterPortEntry'}};
 
 %ShEvent = {{'CuePokeInTime','CuePokeOutTime','WaterPortIn'}};
 %ShEvent={{'TriggerZoneIn','RewardCue','TriggerZoneOut','Zone1FirstEntry','ReminderCue','Zone1FirstExit','WaterValveOn','WaterValveOff','HomeZoneIn','RewardZoneIn'}};

@@ -2,7 +2,7 @@ function [varargout] = similarity_template_spike(cellid,varargin)
 
 % add_analysis(@similarity_template_spike,1,'property_names',{'AUC','idx'},'arglist',{'rez','rezFinalK','whitening','n','method','svm','plotting',1});
 
-% add_analysis(@similarity_template_spike,99,'property_names',{'AUC','idx'},'arglist',{'rez','rezFinalK','cells',[2:400],'plotting',0});
+% add_analysis(@similarity_template_spike,99,'property_names',{'AUC','idx'},'arglist',{'rez','rezFinalK','cells',[2601:3000],'plotting',0});
 % delanalysis(@similarity_template_spike)
 %To Do
 %check up on cluster identity
@@ -67,6 +67,11 @@ end
 load(fullfile(f.path,r,s,f.rez));
 path = fullfile(f.path,r,s);
 Template_all = rez.M_template;
+OK = 1;
+if isempty(cluster)
+    OK = 0;
+end
+
 
 tic
 if load_data && ~error
@@ -98,9 +103,9 @@ toc
 tic
 
 [AUC,idx_sim] = deal(-1);
-if error
+if error 
     [AUC,idx_sim,dataW] = deal(nan);
-else
+elseif OK
     range        = [-10:50];
     Idx          = rez.st(logical(rez.st(:,8)==cluster),1);
     Template_spk = nan(numel(range),32,numel(Idx));
@@ -119,7 +124,7 @@ else
     channals_nzero = any(Template_cl ~= 0);
     tt             = sum(channals_nzero);
     
-    if tt
+    if tt 
         main_cl = nan(numel(Idx),sum(channals_nzero));
         range = f.range;
         for i = 1:numel(Idx)
@@ -207,7 +212,7 @@ else
                 end
             end
         end
-    end
+    end    
 end
 toc
 varargout{1}.AUC = AUC;

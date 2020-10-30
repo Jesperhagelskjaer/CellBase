@@ -6,16 +6,16 @@ function [varargout] = behaviour_neurons_kernels(cellid,varargin)
 % the wish of Duda Kvitsiani).
 %
 % Example:
-% add_analysis(@behaviour_neurons_kernels,1,'property_names',{'B_trial_neuron','p_trial_neuron','AUC'},'arglist',{'loops',25,'trials',11})
-% add_analysis(@behaviour_neurons_kernels,0,'property_names',{'B_trial_neuron','p_trial_neuron','AUC'},'arglist',{'loops',25})
-% add_analysis(@behaviour_neurons_kernels,0,'property_names',{'B_trial_neuron','p_trial_neuron','AUC'},'arglist',{'loops',25,'display',1})
+% add_analysis(@behaviour_neurons_kernels,1,'property_names',{'B_trial_neuron','p_trial_neuron','AUC_kernel'},'arglist',{'loops',25,'trials',11})
+% add_analysis(@behaviour_neurons_kernels,0,'property_names',{'B_trial_neuron','p_trial_neuron','AUC_kenel'},'arglist',{'loops',25})
+% add_analysis(@behaviour_neurons_kernels,1,'property_names',{'validation'},'arglist',{'data',{'C','R','NR' }})
 % delanalysis(@behaviour_neurons_kernels)
 %
 % created (JH) 2020-07-20
 
 global TheMatrix
 global CELLIDLIST
-global f
+persistent f
 method       = varargin{1};
 if (cellid == 0)
     
@@ -26,11 +26,12 @@ if (cellid == 0)
     addParameter(prs,'loops',100,@(x) isscalar(x) && (x > 0 ))
     addParameter(prs,'data',{'R','NR'})
     addParameter(prs,'trials',11,@(x) isscalar(x) && x > 0)
+    addParameter(prs,'display',false,@(s)islogical(s)|ismember(s,[0 1]))   
     
     if any(strcmp(method,'AUC')) || any(strcmp(method,'AUC_bootstr'))
         addParameter(prs,'bootstrap',0,@(x) isscalar(x) && x > 0)   % size of bootstrap sample
         addParameter(prs,'transform','none',@(s)ismember(s,{'none' 'swap' 'scale'}))   % rescaling
-        addParameter(prs,'display',false,@(s)islogical(s)|ismember(s,[0 1]))   % control displaying rasters and PSTHs
+
     end
     
     parse(prs,varargin{:})
@@ -55,14 +56,14 @@ if ~isnan(remove_index)
     Firing(remove_index) = [];
 end
 
-[B_trial_neuron,p_trial_neuron,chow,AUC,P] = deal(nan);
+[B_trial_neuron,p_trial_neuron,chow,AUC_kernel,P] = deal(nan);
 if exist('Firing','var')
     % %IMPORTANT
-    F = zscore(Firing); %z_score pr columns (each neuron are centered to 0)
+    %Firing = zscore(Firing); %z_score pr columns (each neuron are centered to 0)
     
-    if any(isnan(F))
-        B_trial_neuron = nan(size(F,1),31);
-        p_trial_neuron = nan(size(F,1),31);
+    if any(isnan(Firing))
+        B_trial_neuron = nan(size(Firing,1),31);
+        p_trial_neuron = nan(size(Firing,1),31);
     else
         data = [];
         for i = 1:numel(f.data)
@@ -81,11 +82,11 @@ if exist('Firing','var')
                     data  = [data NR == -1 NR == 1]; %no_reward
             end
         end
-        if numel(F) == size(data,1)
-            [B_trial_neuron, p_trial_neuron,chow] = lasso_regression(F, data,f.loops,method);
+        if numel(Firing) == size(data,1)
+            [B_trial_neuron, p_trial_neuron,chow,validation] = lasso_regression(Firing, data,f,method);
             
             if any(strcmp(method,'AUC')) || any(strcmp(method,'AUC_bootstr'))
-                [AUC, P] =  AUC_kernels(Firing, data, B_trial_neuron,method); %send the not standized firing rate of the neurons
+                [AUC_kernel, P] =  AUC_kernels(Firing, data, B_trial_neuron,method); %send the not standized firing rate of the neurons
             end
         end
     end
@@ -94,9 +95,10 @@ end
 
 varargout{1}.B_trial_neuron = B_trial_neuron;
 varargout{1}.p_trial_neuron = p_trial_neuron;
-varargout{1}.AUC            = AUC;
+varargout{1}.AUC            = AUC_kernel;
 varargout{1}.P              = P;
 varargout{1}.h              = chow;
+varargout{1}.validation     = validation;
 end
 
 

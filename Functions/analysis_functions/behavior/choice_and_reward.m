@@ -3,7 +3,7 @@ function [varargout] = choice_and_reward(cellid,varargin)
 %   Examples:
 %add_analysis(@choice_and_reward,1,'property_names',{'CH','RH','NRH','Indices_to_erase'})
 %add_analysis(@choice_and_reward,1,'property_names',{'CH','RH',NRH,'Indices_to_erase'},'arglist',{'cells',[1 15 30 45 50]});
-%add_analysis(@choice_and_reward,0,'property_names',{'CH','RH',NRH},'arglist',{'cells',{'D:\recording'})
+%add_analysis(@choice_and_reward,0,'property_names',{'CH','RH','NRH'},'arglist',{})
 %add_analysis(@choice_and_reward,0,'property_names',{'Indices_to_erase'})
 
 %delanalysis(@choice_and_reward)

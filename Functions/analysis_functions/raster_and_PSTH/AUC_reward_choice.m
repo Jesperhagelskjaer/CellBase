@@ -1,4 +1,4 @@
-  function [varargout] = AUC_reward_choice(cellid,path)
+  function [varargout] = AUC_reward_choice(cellid,varargin)
 % function [AUC_past_choice_r, AUC_past_choice_r_P,AUC_past_reward_right,AUC_past_reward_right_P] = AUC_reward_choice_test(cellid,path)
 % addanalysis(@AUC_reward_choice,'property_names',{'AUC_past_choice_r', 'AUC_past_reward_right', 'AUC_past_choice_nr', 'AUC_past_reward_left','AUC_next_choice', 'AUC_next_choice_control'},'mandatory',{'O:\ST_Duda\Maria\CellBaseFreeChoiceBaitBlock'})
 % addanalysis(@AUC_reward_choice,'property_names',{'AUC_past_choice_r','AUC_past_choice_r_P','AUC_past_choice_nr','AUC_past_choice_nr_P',...
@@ -6,6 +6,9 @@
 ...'AUC_next_choice_control','AUC_next_choice_control_P'},'mandatory',{'O:\ST_Duda\Maria\CellBaseFreeChoiceBaitBlock'})
 % Compute how neurons are selective for the last reward but not choice,
 % and vice-versa.
+
+%add_analysis(@AUC_reward_choice,0,'property_names',{'AUC_past_choice_r'});
+
 % delanalysis(@AUC_reward_choice)
 
 % Author: Junior Samuel López Yépez - February/2020 (last update)
@@ -13,17 +16,27 @@
 % Approx. run-time with current data of 5 animals: 60 minutes
 global TheMatrix
 global CELLIDLIST
-prs = inputParser;
-addRequired(prs,'cellid',@(cellid) iscellid((cellid)) || (cellid) == 0)  % cell ID
-addRequired(prs,'path',@ischar) % cell ID
-parse(prs,cellid,path)
+persistent f
 
-N = 1000; % bootstrap for AUC
 
-if (prs.Results.cellid == 0)
+
+if (cellid == 0)
+    method       = varargin{1};
+    varargin(1)  = [];
+    varargin     = [varargin{:}];  
+    prs          = inputParser;
+    
+    addParameter(prs,'path',getpref('cellbase').datapath,@ischar) %
+     addParameter(prs,'bootstrap',1000,@(x) isscalar(x) && x > 0) %
+    parse(prs,varargin{:})
+    
+    f = prs.Results;
+    
     varargout{1}.prs = prs;
     return
 end
+
+N = f.bootstrap;
 
 
 [r,s,~,~] = cellid2tags(cellid);
@@ -64,22 +77,22 @@ else
     RH(Indices_to_erase)            = []; %check up on
     Firing_center(Indices_to_erase) = [];
     
-    past_right_choice = circshift(CH == 1, [1 0]);
-    past_left_choice = circshift(CH == 0, [1 0]);
-    past_trial_rewarded = (abs(circshift(RH, [1 0])) == 1);
-    past_trial_no_rewarded          = (abs(circshift(RH, [1 0])) == 0);
+    past_right_choice           = circshift(CH == 1, [1 0]);
+    past_left_choice            = circshift(CH == 0, [1 0]);
+    past_trial_rewarded         = (abs(circshift(RH, [1 0])) == 1);
+    past_trial_no_rewarded      = (abs(circshift(RH, [1 0])) == 0);
     
-    inx_r_rew = past_right_choice == 1 & past_trial_rewarded == 1;
-    inx_l_rew = past_left_choice == 1 & past_trial_rewarded == 1;
+    inx_r_rew  = past_right_choice == 1 & past_trial_rewarded == 1;
+    inx_l_rew  = past_left_choice == 1 & past_trial_rewarded == 1;
     inx_r_nrew = past_right_choice == 1 & past_trial_rewarded == 0;
     inx_l_nrew = past_left_choice == 1 & past_trial_rewarded == 0;
 
     
-    [AUC_past_choice_r, AUC_past_choice_r_P, ~] = rocarea(Firing_center(inx_r_rew),Firing_center(inx_l_rew),'bootstrap',N,'transform','none');
-    [AUC_past_reward_right, AUC_past_reward_right_P, ~] = rocarea(Firing_center(inx_r_rew),Firing_center(inx_r_nrew),'bootstrap',N,'transform','none');
-    [AUC_past_choice_nr, AUC_past_choice_nr_P, ~] = rocarea(Firing_center(inx_r_nrew),Firing_center(inx_l_nrew),'bootstrap',N,'transform','none');
-    [AUC_past_reward_left, AUC_past_reward_left_P, ~] = rocarea(Firing_center(inx_l_rew),Firing_center(inx_l_nrew),'bootstrap',N,'transform','none');
-    [AUC_next_choice,AUC_next_choice_P,~]   = rocarea(Firing_center(CH == 1),Firing_center(CH == 0),'bootstrap',N,'transform','none');
+    [AUC_past_choice_r, AUC_past_choice_r_P, ~]             = rocarea(Firing_center(inx_r_rew),Firing_center(inx_l_rew),'bootstrap',N,'transform','none');
+    [AUC_past_reward_right, AUC_past_reward_right_P, ~]     = rocarea(Firing_center(inx_r_rew),Firing_center(inx_r_nrew),'bootstrap',N,'transform','none');
+    [AUC_past_choice_nr, AUC_past_choice_nr_P, ~]           = rocarea(Firing_center(inx_r_nrew),Firing_center(inx_l_nrew),'bootstrap',N,'transform','none');
+    [AUC_past_reward_left, AUC_past_reward_left_P, ~]       = rocarea(Firing_center(inx_l_rew),Firing_center(inx_l_nrew),'bootstrap',N,'transform','none');
+    [AUC_next_choice,AUC_next_choice_P,~]                   = rocarea(Firing_center(CH == 1),Firing_center(CH == 0),'bootstrap',N,'transform','none');
     [AUC_next_choice_control,AUC_next_choice_control_P,~]   = rocarea(Firing_center(CH(randperm(length(CH))) == 1),Firing_center(CH(randperm(length(CH))) == 0),'bootstrap',N,'transform','none');
 
 end
@@ -96,10 +109,10 @@ varargout{1}.AUC_past_reward_right_P  = AUC_past_reward_right_P;
 varargout{1}.AUC_past_reward_left     = AUC_past_reward_left;
 varargout{1}.AUC_past_reward_left_P   = AUC_past_reward_left_P;
 
-varargout{1}.AUC_next_choice = AUC_next_choice;
-varargout{1}.AUC_next_choice_P = AUC_next_choice_P;
+varargout{1}.AUC_next_choice           = AUC_next_choice;
+varargout{1}.AUC_next_choice_P         = AUC_next_choice_P;
 
-varargout{1}.AUC_next_choice_control = AUC_next_choice_control;
+varargout{1}.AUC_next_choice_control   = AUC_next_choice_control;
 varargout{1}.AUC_next_choice_control_P = AUC_next_choice_control_P;
 
 
