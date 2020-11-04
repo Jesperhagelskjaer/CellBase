@@ -28,7 +28,7 @@ d = uigetdir(datapath,'Select the root data directory');
 if d ~= 0
     datapath = d;
     setpref('cellbase','datapath',datapath);
-    [pathstr name ext] = fileparts(fname);
+    [pathstr, name, ext] = fileparts(fname);
     fname = fullfile(datapath,[name ext]);
     f = uiputfile({'*.mat','MAT-files (*.mat)'},'Select the main database file',fname);
     if f ~=0
@@ -62,12 +62,18 @@ switch tsc
 end
 
 % Set other preferences (persistent and maintain their values between MATLAB sessions)
+[ep_name] = epoch_name();
+[ev_name] = event_name();
+
 setpref('cellbase','session_filename','TrialEvents.mat');
 setpref('cellbase','TrialEvents_filename','TrialEvents.mat');
 setpref('cellbase','StimEvents_filename','StimEvents.mat');
 setpref('cellbase','cell_pattern','TT');
 setpref('cellbase','filesep',filesep);
+setpref('cellbase','epoch',ep_name);
+setpref('cellbase','event',ev_name);
 setpref('cellbase','timefactor',timefactor);
+
 
 % Store cellbases to allow multiple instances
 if ispref('cellbase','cellbases')
@@ -91,8 +97,8 @@ if ( fid == -1) || strcmp(questdlg(QuestionStr,'InitCB','Yes','No','No'),'Yes') 
     [ANALYSES,CELLIDLIST]  = deal([]);
     TheMatrix = {};
     save(fname,'TheMatrix','ANALYSES','CELLIDLIST');
-    NUM_CELLS = addnewcells;
-    
+    %NUM_CELLS = addnewcells;
+    NUM_CELLS = addnewcells_J;
     Data = imread('CellBase_icon.tif');
     welcomestr = sprintf('Your CellBase has been initialized with %d cells. \n Have fun!  \n\n\n\n',NUM_CELLS);
     msgbox(welcomestr,'Welcome to CellBase','custom',Data);

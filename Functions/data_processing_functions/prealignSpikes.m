@@ -93,14 +93,10 @@ end
 % Load events
 for i = 1:length(mycellids)
     cellid = mycellids(i);
-%        loadcb(cellid,EVFILE);
-      TE = loadcb(cellid,EVFILE);
-      EV = TE;
-%     loadcb(cellid,EVFILE); %dk
+    TE = loadcb(cellid,EVFILE);
 
     % Now we need to pass the Event file to extractEventSpikes
-    [event_stimes,event_windows] = extractEventSpikes(cellid,events,EV);
-%   [event_stimes,event_windows] = extractEventSpikes(cellid,events,TE); % dk
+    [event_stimes,event_windows] = extractEventSpikes(cellid,events,TE);
     epoch_rates = extractEpochRates(event_stimes,event_windows,events,epochs);
     fname = cellid2fnames(cellid,FNAMESTR);
     
@@ -124,16 +120,16 @@ for i = 1:length(mycellids)
         case 'replace'  % attempt to replace the redefined events
             disp('Appending existing prealigned file with replacing evnets.');
             x = load(fname);  % load existing alignment
-            levents = events;   % 'local copies' of the newly computed variables - we need their names for the final ones
-            levent_stimes = event_stimes;
-            levent_windows = event_windows;
-            lepochs = epochs;
-            lepoch_rates = epoch_rates;
-            events = x.events;   % start from the loaded variables and try to replace
-            event_stimes = x.event_stimes;
-            event_windows = x.event_windows;
-            epochs = x.epochs;
-            epoch_rates = x.epoch_rates;
+            levents          = events;   % 'local copies' of the newly computed variables - we need their names for the final ones
+            levent_stimes    = event_stimes;
+            levent_windows   = event_windows;
+            lepochs          = epochs;
+            lepoch_rates     = epoch_rates;
+            events           = x.events;   % start from the loaded variables and try to replace
+            event_stimes     = x.event_stimes;
+            event_windows    = x.event_windows;
+            epochs           = x.epochs;
+            epoch_rates      = x.epoch_rates;
             if strcmp(x.cellid,cellid)
                 for iE = 1:size(levents,1)   % replace events
                     evinx = find(strcmp(events(:,1),levents{iE,1}));
@@ -164,8 +160,7 @@ for i = 1:length(mycellids)
                 disp('Mismatch in cellids. Append attempt is canceled. File not saved')
             end
         case 'overwrite'   % overwrite file
-            if g.ifsave  % defensive strategy: save only if instructed to
                 save(fname,'cellid','events','event_stimes','event_windows','epochs','epoch_rates');
-            end
+
     end
 end

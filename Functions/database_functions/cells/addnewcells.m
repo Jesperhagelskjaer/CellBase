@@ -13,8 +13,8 @@ global TheMatrix
 global ANALYSES
 % Default arguments
 prs = inputParser;
-addParamValue(prs,'prealign',false,@(s)islogical(s)|ismember(s,[0 1]))   % control whether to run prealignSpikes
-addParamValue(prs,'dir','',@ischar)   % restrict addnewcells to a directory
+addParameter(prs,'prealign',1,@(s)islogical(s)|ismember(s,[0 1]))   % control whether to run prealignSpikes
+addParameter(prs,'dir','',@ischar)   % restrict addnewcells to a directory
 parse(prs,varargin{:})
 g = prs.Results;
 loadcb
@@ -100,30 +100,3 @@ save(cellbase_fname,'TheMatrix','ANALYSES','CELLIDLIST')
 
 end
 
-%legacy
-%         for iOld = 1:length(old_cellids) % get the latest events and epochs in the database
-%             try
-%                 EVENTSPIKES = loadcb(old_cellids(iOld),'EventSpikes');
-%             catch
-%                 EVENTSPIKES = [];
-%             end
-%             if ~isempty(EVENTSPIKES)
-%                 behav_events = EVENTSPIKES.events;
-%                 behav_epochs = EVENTSPIKES.epochs;
-%                 break
-%             else
-%             end
-%         end
-%         for iOld = 1:length(old_cellids)  % get the latest events and epochs in the database
-%             try
-%                 STIMSPIKES = loadcb(old_cellids(iOld),'StimSpikes');
-%             catch
-%                 STIMSPIKES = [];
-%             end
-%             if ~isempty(STIMSPIKES)
-%                 stim_events = STIMSPIKES.events;
-%                 stim_epochs = STIMSPIKES.epochs;
-%                 break
-%             else
-%             end
-%         end

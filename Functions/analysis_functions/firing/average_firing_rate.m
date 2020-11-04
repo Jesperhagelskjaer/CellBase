@@ -1,9 +1,9 @@
 function [varargout] = average_firing_rate(cellid,varargin)
 
 
-%add_analysis(@average_firing_rate,1,'property_names',{'Total_FR'},'arglist',{});
+%add_analysis(@average_firing_rate,1,'property_names',{'CentralPortEpoch','Total_FR'},'arglist',{});
 %add_analysis(@average_firing_rate,0,'property_names',{'CentralPortEpoch','Total_FR'},'arglist',{'cells',[1 15 30 45 50]});
-%add_analysis(@average_firing_rate,0,'property_names',{'CentralPortEpoch','Total_FR'});
+%add_analysis(@average_firing_rate,1,'property_names',{'CentralPortEpoch'});
 
 %delanalysis(@average_firing_rate)
 

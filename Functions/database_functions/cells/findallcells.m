@@ -73,7 +73,7 @@ for rdir = 1:length(ratdir)   % animal loop
         % Convert filenames to cell IDs
         for fnum = 1:length(cellfiles)   % filename loop
             fname = fullfile(fullsessiondir,char(cellfiles(fnum)));
-            cellid = fname2cellid(fname);
+            cellid = fname2cellid(fname); % change this function(jh)
             if cellid ~= 0
                 allcellids{k} = cellid;
                 k = k+1;

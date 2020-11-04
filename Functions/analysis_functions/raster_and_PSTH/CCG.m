@@ -1,7 +1,7 @@
 function [varargout] = CCG(cellid,varargin)
 
 % add_analysis(@CCG,1,'property_names',{'Pvalue'},'arglist',{'data',{'C','R','NR' }})
-% add_analysis(@CCG,1,'property_names',{'Pvalue_KS','Pvalue_W','spike_transmission'},'arglist',{'data',{'C','R','NR' }})
+% add_analysis(@CCG,0,'property_names',{'Pvalue_KS','Pvalue_W','spike_transmission'},'arglist',{'data',{'C','R','NR' }})
 % delanalysis(@CCG)
 global TheMatrix
 global CELLIDLIST

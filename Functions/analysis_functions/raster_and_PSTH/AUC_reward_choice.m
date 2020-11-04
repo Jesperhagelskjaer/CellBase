@@ -43,8 +43,13 @@ Firing(RMI) = [];
 
 pc_l         = circshift(CH == -1, [1 0]);
 pc_r         = circshift(CH ==  1, [1 0]);
+pc_l         = pc_l(2:end); 
+pc_r         = pc_r(2:end); 
+Firing       = Firing(2:end);
+
 RH(RH == -1) = 1; %(j) %did the animal receive a reward on either the left or right side
 pr_trial     = circshift(RH, [1 0]); %pr - past reward
+pr_trial     = pr_trial(2:end); 
 
 inx_r_rew  = pc_r  == 1 & pr_trial == 1;
 inx_l_rew  = pc_l  == 1 & pr_trial == 1;
