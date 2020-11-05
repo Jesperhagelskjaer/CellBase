@@ -17,7 +17,7 @@ function viewcell2b(cellid,varargin)
 %       'PSTHstd', 'on' or 'off', controls whether SD is plotted on the PSTH
 %           panel
 %       'Partitions', e.g. 'all', '#ResponseType', can be used to partition
-%           the trials according to different variables, multiple rasters 
+%           the trials according to different variables, multiple rasters
 %           are plotted
 %       'EventMarkerWidth', specifies marker size for events shown
 %           'PlotZeroLine', 'on' or 'off', controls whether a line
@@ -58,7 +58,7 @@ default_args={...
     'Partitions',           'all';...
     'PrintCellID',          'on';...
     'PrintCellIDPos',       'bottom-right';...
-    'BurstPSTH'             'off';......  
+    'BurstPSTH'             'off';......
     };
 [g,error] = parse_args(default_args,varargin{:});
 
@@ -79,16 +79,12 @@ time = g.window(1)-margin:g.dt:g.window(2)+margin;   % time base array
 % Load events
 switch g.eventtype
     case 'stim'
-%          TE = loadcb(cellid,'StimEvents');
-%          SP = loadcb(cellid,'STIMSPIKES');
-loadcb(cellid,'StimEvents'); %dk
-loadcb(cellid,'STIMSPIKES'); %dk
+        loadcb(cellid,'StimEvents'); 
+        loadcb(cellid,'STIMSPIKES'); 
     case {'event','behav'}
         TE = loadcb(cellid,'TrialEvents');
         SP = loadcb(cellid,'EVENTSPIKES');
-        loadcb(cellid,'TrialEvents'); %dk
-        
-
+        loadcb(cellid,'TrialEvents');     
 end
 trigger_pos = findcellstr(SP.events(:,1),g.TriggerName);
 
@@ -105,7 +101,7 @@ end
 % Spike times
 alltrials = 1:size(SP.event_stimes{1},2);
 stimes  = SP.event_stimes{trigger_pos}(alltrials);
-if strcmp(g.BurstPSTH,'on'),
+if strcmp(g.BurstPSTH,'on')
     stimes = detect_bursts(stimes);
 end
 
@@ -128,13 +124,13 @@ if iscell(stimes{1})   % deal with lick-aligned raster
     stimes2 = [stimes{1:end}];
     binraster0 = stimes2binraster(stimes2,time,g.dt);
     binraster = nan(NUMtrials,size(binraster0,2));
-%     binraster2 = nan(NUMtrials,size(binraster0,2));
+    %     binraster2 = nan(NUMtrials,size(binraster0,2));
     for k = 1:NUMtrials   % calculate sum of rows for each trial, which will be used for the PSTH
         sind = sum(cellfun(@length,stimes(1:k-1))) + 1;
         eind = sind + length(stimes{k}) - 1;
-%         disp([sind eind])
+        %         disp([sind eind])
         binraster(k,:) = mean(binraster0(sind:eind,:),1);
-%         binraster2(k,:) = sum(stimes2binraster(stimes{k},time,g.dt),1);
+        %         binraster2(k,:) = sum(stimes2binraster(stimes{k},time,g.dt),1);
     end
 else
     binraster = stimes2binraster(stimes,time,g.dt);
@@ -201,7 +197,7 @@ YLabel = 'Rate (Hz)';
 
 % Plot the raster
 fhandle0 = plot_raster2a(stimes,time,valid_trials,COMPTRIALS,mylabels,EventTimes,window_margin,ev_windows,sort_var,g,'Colors',{mycolors},'Colors2',{mycolors2},'NumTrials2Plot',g.Num2Plot);
-if isfield(g,'Legend'),
+if isfield(g,'Legend')
     mylabels = g.Legend;
 end
 

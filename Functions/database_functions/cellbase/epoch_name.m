@@ -3,7 +3,7 @@ function [str] = epoch_name()
 list = {'EventsEpochs_default','EventsEpochs_firstrestart','EventsEpochs_FreeChoice',...                   
         'EventsEpochs_FreqDiscrimination','EventsEpochs_laserstim_Jane', 'EventsEpochs_Matching',...
         'EventsEpochs_pulseon','EventsEpochs_ToneFreq'};
-[indx,~] = listdlg('ListString',list);
+[indx,~] = listdlg('ListString',list,'ListSize',[500,200],'SelectionMode','single');
 
 switch indx
     case 1
@@ -23,4 +23,5 @@ switch indx
     case 8
         str = 'EventsEpochs_ToneFreq';
 end
+
 end

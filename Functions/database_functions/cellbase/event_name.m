@@ -2,7 +2,7 @@ function [str] = event_name()
 
 list = {'EventsEpochs_ToneFreq','EventsEpochs_Matching','EventsEpochs_FreqDiscrimination',...                   
         'EventsEpochs_FreeChoice','EventsEpochs_laserstim_Jane', 'EventsEpochs_FreeChoiceWithStimInh'};
-[indx,~] = listdlg('ListString',list);
+[indx,~] = listdlg('ListString',list,'ListSize',[500,200],'SelectionMode','single');
 
 switch indx
     case 1
