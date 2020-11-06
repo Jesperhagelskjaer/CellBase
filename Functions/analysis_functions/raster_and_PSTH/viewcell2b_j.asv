@@ -24,6 +24,7 @@ default_args={...
     'PrintCellIDPos',       'bottom-right';...
     'BurstPSTH'             'off';......
     'trial'                 0;...
+    'splitDataSet'          [];
     };
 [g,error] = parse_args(default_args,varargin{:});
 
@@ -51,28 +52,36 @@ trigger_pos = findcellstr(SP.events(:,1),g.TriggerName);
 if trigger_pos == 0
     error('Trigger name not found');
 end
-aha_moment                  = 500;
-valid_trial                 = ~isnan(TE.(g.TriggerName)); %(!)
-valid_trial(aha_moment:end) = [];
-%valid_trial(1:aha_moment) = [];
-valid_trial_shift            = circshift(valid_trial', [g.trial 0]);
-valid_trial_shift(1:g.trial) = 0;
-stimes                       = SP.event_stimes{trigger_pos}(valid_trial_shift);
-binraster                    = stimes2binraster(stimes,time,g.dt); % Calculate binraster
-[psth, spsth, ~]             = binraster2psth_J(binraster,g.dt,g.sigma);
 
-binraster   = ~logical(binraster);
-data = repmat(binraster, 1, 1, 3); % makes multiple copies of your matrix in 3rd dimension
+data   = TE.(g.TriggerName);
+[data] = splitting_data_set(data,g);
+name{1}   = g.TriggerName;
+for i = 1:size(data,2)
+    valid_trial{i}               = ~isnan(data{i}); %(!)
+    valid_trial_shift{i}         = circshift(valid_trial{i}', [g.trial 0]);
+    stimes{i}                    = SP.event_stimes{trigger_pos}(valid_trial_shift{i} );
+    binraster{i}                 = stimes2binraster(stimes{i},time,g.dt); % Calculate binraster
+    [~, spsth(:,i), ~]           = binraster2psth_J(binraster{i},g.dt,g.sigma);
+    
+end
+
+[label_str]               = label_creating(name,size(spsth,2));
+psth_legend{size(spsth(:,i))}          = [];
 figure;
-h_s1 = subplot(2,1,1);
-image(0.5:size(binraster,2),1:size(binraster,1),data,'CDataMapping','scaled')
-set(gca,'box','off')
-subplot(2,1,2);
+for i = 1:size(data,2)
+    Data       = repmat(~logical(binraster{i}), 1, 1, 3); % makes multiple copies of your matrix in 3rd dimension
+    subplot(size(data,2)+1,1,i);
+    image(0.5:size(binraster{i},2),1:size(binraster{i},1),Data,'CDataMapping','scaled')
+    title(label_str{i})
+    psth_legend{i} =  strcat(label_str{i});
+    set(gca,'XColor', 'none')
+end
+subplot(size(data,2)+1,1,size(data,2)+1);
 plot(time,spsth)
 xlim([time(1) time(end)])
 ylabel('Rate (Hz)')
 xlabel('Time [s]')
-
+legend(psth_legend)
 
 
 

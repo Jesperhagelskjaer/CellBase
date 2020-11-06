@@ -1,7 +1,7 @@
 %The functions created by Jesper Hagelskjær
 % add_analysis
 % average_firing_rate          (done)
-% AUC_reward_choice            (done)
+% AUC_reward_choice            (done)!
 % Baiting                      (done)
 % behaviour_neurons_kernels    (done)
 % behaviour_kernels            (done)

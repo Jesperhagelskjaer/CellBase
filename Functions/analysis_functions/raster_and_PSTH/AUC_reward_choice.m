@@ -41,7 +41,7 @@ CH(RMI)     = [];
 RH(RMI)     = []; 
 Firing(RMI) = [];
 
-pc_l         = circshift(CH == -1, [1 0]);
+pc_l         = circshift(CH == -1, [1 0]);    %previous choice left
 pc_r         = circshift(CH ==  1, [1 0]);
 pc_l(1)      = 0;
 pc_r(1)      = 0;
