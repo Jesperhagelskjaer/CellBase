@@ -1,15 +1,17 @@
-function viewcell2b_j(cellid,varargin)
+function viewcell2b_j(cellid,triggerName,varargin)
 
 
 prs          = inputParser;
+addRequired(prs,'cellid',@(x) iscell(x) )
+addRequired(prs,'triggerName',@(x) iscell(x) || isstring(x) || ischar(x))
 addParameter(prs,'window',[-0.5 1]) %
 addParameter(prs,'dt',0.01) %
 addParameter(prs,'sigma',0.02)
 addParameter(prs,'trial',0)   % rescaling
 addParameter(prs,'splitDataSet',[])
 addParameter(prs,'event_name','CentralPortEpoch')
-addParameter(prs,'triggerName',[])
-parse(prs,varargin{:})
+
+parse(prs,cellid,triggerName,varargin{:})
 g = prs.Results;
 
 

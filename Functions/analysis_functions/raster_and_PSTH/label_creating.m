@@ -9,6 +9,6 @@ for i = 1:numel(name)
         label_str{2,i} = strcat(name{i},' - after');
     end
 end
-label_str = reshape(label_str,size(label_str,1)*size(label_str,1),1);
+label_str = reshape(label_str,size(label_str,1)*size(label_str,2),1);
 end
 
