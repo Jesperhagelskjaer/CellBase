@@ -1,0 +1,17 @@
+function [] = checking_trigger_name(SP,g)
+
+%if only one triggerName the user can input the name as array, however 
+if ~iscell(g.TriggerName)
+    g.TriggerName = {g.TriggerName};
+end
+
+for i = 1:numel(g.TriggerName)
+    trigger_pos = findcellstr(SP.events(:,1),g.TriggerName{i});
+    
+    % TriggerName mismatch
+    if trigger_pos == 0
+        error('Trigger name not found');
+    end
+end
+end
+
