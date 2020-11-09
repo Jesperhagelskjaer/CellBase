@@ -13,7 +13,7 @@ function [C_high, C_low] = stimes2binraster_J(g,data)
 margin = g.sigma * g.sigma_ex;     % add an extra margin to the windows
 
 edge_high  = g.window(1):0.001:g.window(2);
-edge_low   = g.window(1)-margin-g.dt:g.dt:g.window(2)+margin+g.dt;   % time base array
+edge_low   = g.window(1)-margin:g.dt:g.window(2)+margin;   % time base array
 C_high   = zeros(numel(data),numel(edge_high)-1);
 C_low   = zeros(numel(data),numel(edge_low)-1);
 for i = 1:numel(data)

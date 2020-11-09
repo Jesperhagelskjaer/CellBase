@@ -1,4 +1,6 @@
-function [label_str] = label_creating(name,m,g)
+function [label_str] = label_creating(g,m)
+
+name = g.triggerName;
 
 for i = 1:numel(name)
     if m == 1
@@ -21,8 +23,7 @@ if ~isempty(g.event)
     end
 end
 
-
-
 label_str = reshape(label_str,size(label_str,1)*size(label_str,2),1);
+
 end
 
