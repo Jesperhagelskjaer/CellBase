@@ -12,7 +12,12 @@ for i = 1:numel(g.triggerName)
     end
 end
 
-
+if ~isempty(g.event)
+    % TriggerName mismatch
+    if findcellstr(SP.events(:,1),g.event) == 0
+        error('event name not found');
+    end
+end
 
 end
 
