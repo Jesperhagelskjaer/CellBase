@@ -8,7 +8,7 @@ for i = 1:size(spsth,2)
     holder = raster_high{i}.* mul2';
     holder(holder == 0) = nan; %if nan they will not be plotted
     subplot(size(spsth,2)+1,1,i);
-    plot(mul,holder,'|k','MarkerSize',0.5)
+    plot(mul,holder,'|k','MarkerSize',g.MarkerSize)
     ylim([-1 size(holder,1)+1])
     xlim([0 size(holder,2)])
     set(gca,'xtick',[])

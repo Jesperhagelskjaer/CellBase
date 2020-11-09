@@ -1,6 +1,5 @@
 function viewcell2b_j(cellid,triggerName,varargin)
 
-
 prs          = inputParser;
 addRequired(prs,'cellid',@(x) iscell(x) )
 addRequired(prs,'triggerName',@(x) iscell(x) || isstring(x) || ischar(x))
@@ -11,6 +10,7 @@ addParameter(prs,'sigma_ex',3)
 addParameter(prs,'trial',0)   % rescaling
 addParameter(prs,'splitDataSet',[])
 addParameter(prs,'event',[])
+addParameter(prs,'MarkerSize',0.5)
 parse(prs,cellid,triggerName,varargin{:})
 g = prs.Results;
 
