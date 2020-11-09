@@ -11,5 +11,8 @@ for i = 1:numel(g.triggerName)
         error('trigger name not found');
     end
 end
+
+
+
 end
 

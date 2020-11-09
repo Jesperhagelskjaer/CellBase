@@ -8,7 +8,11 @@ for i = 1:numel(name)
         label_str{1,i} = strcat(name{i},' - before');
         label_str{2,i} = strcat(name{i},' - after');
     end
+    if isempty(g.event)
+        label_str{1,i} = strcat(name{i},'- 'g.event);
+        label_str{2,i} = strcat(name{i},' -'g.event);
+    end
 end
-label_str_t = reshape(label_str{:},[],numel(numel(name)*2)
+label_str = reshape(label_str,size(label_str,1)*size(label_str,2),1);
 end
 
