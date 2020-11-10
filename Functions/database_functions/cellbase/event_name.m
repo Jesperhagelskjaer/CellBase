@@ -1,23 +1,22 @@
 function [str] = event_name()
 
-list = {'EventsEpochs_ToneFreq','EventsEpochs_Matching','EventsEpochs_FreqDiscrimination',...                   
-        'EventsEpochs_FreeChoice','EventsEpochs_laserstim_Jane', 'EventsEpochs_FreeChoiceWithStimInh'};
-[indx,~] = listdlg('ListString',list,'ListSize',[500,200],'SelectionMode','single');
+path = matlab.desktop.editor.getActiveFilename;
+out  = regexp(path,'\','split');
+idx = find(strcmpi('Functions',out));
+path = fullfile(out{1:idx},'create_epochs_event\TrialEvent');
+files = dir(path);
 
-switch indx
-    case 1
-        str = 'EventsEpochs_ToneFreq';
-    case 2
-        str = 'EventsEpochs_Matching';
-    case 3
-        str = 'EventsEpochs_FreqDiscrimination';
-    case 4
-        str = 'EventsEpochs_FreeChoice';
-    case 5
-        str = 'EventsEpochs_laserstim_Jane';
-    case 6 
-        str = 'EventsEpochs_FreeChoiceWithStimInh';
+for i = 3:numel(files)
+   names{i-2} = files(i).name;
 end
 
+[idx,~] = listdlg('ListString',names,'ListSize',[500,200],'SelectionMode','single');
+
+str = names{idx}(1:end-2); %removing the ".m" extension;
+
 end
+
+
+
+
 

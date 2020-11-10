@@ -45,9 +45,10 @@ if NUM_newcellids > 0
         %Creating the TrialEvents event file if it does not exist 
         if ~exist(fullfile(getpref('cellbase','datapath'),name,session,'TrialEvents.mat'),'file')
             path                = fullfile(getpref('cellbase','datapath'),name,session);
-            feval(strcat('make_',getpref('cellbase').event),path,'OpenEphys')
+            feval(getpref('cellbase').event,path,'OpenEphys')
         end
-        prealignSpikes(new_cellids(i),'FUNdefineEventsEpochs',strcat('define',getpref('cellbase').epoch),'writing_behavior','overwrite')
+        %creating the 
+        prealignSpikes(new_cellids(i),'FUNdefineEventsEpochs',getpref('cellbase').epoch,'writing_behavior','overwrite')
         
         
         %MakeTrialEvents_SimpleFreeChoice

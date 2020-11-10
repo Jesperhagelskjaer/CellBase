@@ -7,7 +7,7 @@ function [varargout] = behaviour_neurons_kernels(cellid,varargin)
 %
 % Example:
 % add_analysis(@behaviour_neurons_kernels,1,'property_names',{'B_trial_neuron','p_trial_neuron','AUC_kernel'},'arglist',{'loops',25,'trials',11})
-% add_analysis(@behaviour_neurons_kernels,0,'property_names',{'B_trial_neuron','p_trial_neuron','AUC_kenel'},'arglist',{'loops',25})
+% add_analysis(@behaviour_neurons_kernels,0,'property_names',{'B_trial_neuron','validation','AUC'},'arglist',{})
 % add_analysis(@behaviour_neurons_kernels,1,'property_names',{'validation'},'arglist',{'data',{'C','R','NR' }})
 % delanalysis(@behaviour_neurons_kernels)
 %

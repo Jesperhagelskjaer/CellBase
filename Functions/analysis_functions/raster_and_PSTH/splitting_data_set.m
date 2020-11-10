@@ -9,6 +9,6 @@ if ~isempty(g.splitDataSet)
     data1{1,1}(1:g.splitDataSet)     = data(1:g.splitDataSet);
     data1{1,2}(g.splitDataSet+1:end) = data(g.splitDataSet+1:end);
 else
-    data1{1}    = data; 
+    data1{1}    = logical(data); 
 end
 
