@@ -87,7 +87,9 @@ for iE = 1:NUMevents
         end
         
     else % some events not found
-        sprintf('%d - Warning: %s missing events: %s and/or %s',iE,char(cellid),TriggerEvent1,TriggerEvent2)
+        disp(iE)
+        ;
+        sprintf('%d - Warning: %s missing events: %s and/or %s',num2str(iE),char(cellid),TriggerEvent1,TriggerEvent2)
         event_stimes{iE} = [];
         event_windows{iE} = [NaN NaN];
     end

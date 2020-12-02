@@ -22,10 +22,10 @@ function   cellid = fname2cellid(fname)
 %
 %   setpref('cellbase','group','Mike');
 
-%   Edit log: BH 3/21/11
+%   Edit log: BH 3/21/11 JH 17/11/2020
 
 % Get cellbase preferences
-cellbase_fname = getpref('cellbase','fname');
+%cellbase_fname = getpref('cellbase','fname');
 cellbase_path  = getpref('cellbase','datapath');
 if ispref('cellbase','cell_pattern')
     cell_pattern = getpref('cellbase','cell_pattern');

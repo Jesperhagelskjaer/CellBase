@@ -33,7 +33,7 @@ function [fname_spikes,fname_events] = cellid2fnames(cellid,filename,CSC_chan)
 
 % Get CellBase preferences
 cellbase_datapath = getpref('cellbase','datapath');
-session_fname = getpref('cellbase','session_filename');
+session_fname     = getpref('cellbase','session_filename');
 if ispref('cellbase','StimEvents_filename')
 	stim_fname = getpref('cellbase','StimEvents_filename');
 end

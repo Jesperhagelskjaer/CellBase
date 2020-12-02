@@ -24,32 +24,28 @@ function [events,epochs] = defineEventsEpochs_FreeChoice
 % Define events and epochs
 %              EventLabel       EventTrigger1      EventTrigger2      Window
 i = 1;
-events(i,:) = {'CenterPortEntry',     'CenterPortEntry',      'CenterPortEntry',           [-3 3]};    i = i + 1;
-events(i,:) = {'CenterPortExit',      'CenterPortExit',       'CenterPortExit',            [-3 3]};    i = i + 1;
-events(i,:) = {'LeftPortEntry',       'LeftPortEntry',        'LeftPortEntry',             [-3 3]};    i = i + 1;
-events(i,:) = {'RightPortEntry',      'RightPortEntry',       'RightPortEntry',            [-3 3]};    i = i + 1;
-events(i,:) = {'LeftPortExitFirst',        'LeftPortExitFirst',    'LeftPortExitFirst',         [-3 3]};    i = i + 1;
-events(i,:) = {'RightPortExitFirst',       'RightPortExitFirst',    'RightPortExitFirst',       [-3 3]};    i = i + 1;
-events(i,:) = {'CenterPortLightOff',  'CenterPortRewardOFF',   'CenterPortRewardOFF',      [-3 3]};    i = i + 1;
+events(i,:) = {'CenterPortEntry',     'CenterPortEntry',     'CenterPortEntry',      [-3 3]};    i = i + 1;
+events(i,:) = {'CenterPortExit',      'CenterPortExit',      'CenterPortExit',       [-3 3]};    i = i + 1;
+events(i,:) = {'LeftPortEntry',       'LeftPortEntry',       'LeftPortEntry',        [-3 3]};    i = i + 1;
+events(i,:) = {'RightPortEntry',      'RightPortEntry',      'RightPortEntry',       [-3 3]};    i = i + 1;
+events(i,:) = {'LeftPortExitFirst',   'LeftPortExitFirst',   'LeftPortExitFirst',    [-3 3]};    i = i + 1;
+events(i,:) = {'RightPortExitFirst',  'RightPortExitFirst',  'RightPortExitFirst',   [-3 3]};    i = i + 1;
+events(i,:) = {'CenterPortLightOff',  'CenterPortRewardOFF', 'CenterPortRewardOFF',  [-3 3]};    i = i + 1;
 % events(i,:) = {'SidePortEntry',       'SidePortEntry',         'SidePortEntry',            [-3 3]};    i = i + 1;
 % events(i,:) = {'SidePortExit',        'SidePortExit',          'SidePortExit',             [-3 3]};    i = i + 1;
-events(i,:) = {'LeftPortExitLast',        'LeftPortExitLast',    'LeftPortExitLast',         [-3 3]};    i = i + 1;
-events(i,:) = {'RightPortExitLast',       'RightPortExitLast',    'RightPortExitLast',       [-3 3]};    i = i + 1;
-events(i,:) = {'CenterPortRewardON',  'CenterPortRewardON',    'CenterPortRewardON',       [-3 3]};    i = i + 1;
-events(i,:) = {'CenterPortRewardOFF', 'CenterPortRewardOFF',   'CenterPortRewardOFF',      [-3 3]};    i = i + 1;
-events(i,:) = {'LeftRewardON',       'LeftRewardON',        'LeftRewardON',             [-3 3]};    i = i + 1;
-events(i,:) = {'LeftRewardOFF',      'LeftRewardOFF',       'LeftRewardOFF',            [-3 3]};    i = i + 1;
-events(i,:) = {'RightRewardON',       'RightRewardON',        'RightRewardON',             [-3 3]};    i = i + 1;
-events(i,:) = {'RightRewardOFF',       'RightRewardOFF',        'RightRewardOFF',             [-3 3]};    i = i + 1;
-
-
-
-
+events(i,:) = {'LeftPortExitLast',    'LeftPortExitLast',    'LeftPortExitLast',     [-3 3]};    i = i + 1;
+events(i,:) = {'RightPortExitLast',   'RightPortExitLast',   'RightPortExitLast',    [-3 3]};    i = i + 1;
+events(i,:) = {'CenterPortRewardON',  'CenterPortRewardON',  'CenterPortRewardON',   [-3 3]};    i = i + 1;
+events(i,:) = {'CenterPortRewardOFF', 'CenterPortRewardOFF', 'CenterPortRewardOFF',  [-3 3]};    i = i + 1;
+events(i,:) = {'LeftRewardON',        'LeftRewardON',        'LeftRewardON',         [-3 3]};    i = i + 1;
+events(i,:) = {'LeftRewardOFF',       'LeftRewardOFF',       'LeftRewardOFF',        [-3 3]};    i = i + 1;
+events(i,:) = {'RightRewardON',       'RightRewardON',       'RightRewardON',        [-3 3]};    i = i + 1;
+events(i,:) = {'RightRewardOFF',      'RightRewardOFF',      'RightRewardOFF',       [-3 3]};    i = i + 1;
 
 % Variable events
 events(i,:) = {'CenterStay',        'CenterPortEntry',             'CenterPortExit',        [-1 1]};    i = i + 1;
-events(i,:) = {'RightPortStay',     'RightPortEntry',              'RightPortExit',          [-1 1]};    i = i + 1;
-events(i,:) = {'LeftPortStay',      'LeftPortEntry',               'LeftPortExit',          [-1 1]};    i = i + 1;
+%events(i,:) = {'RightPortStay',     'RightPortEntry',              'RightPortExit',          [-1 1]};    i = i + 1;  %(j)
+%events(i,:) = {'LeftPortStay',      'LeftPortEntry',               'LeftPortExit',          [-1 1]};    i = i + 1;   %(j)
 
 % Define epochs for rate calculations
 %               EpochLabel      ReferenceEvent     Window             RealWindow

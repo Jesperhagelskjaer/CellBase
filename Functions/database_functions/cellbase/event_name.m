@@ -1,9 +1,9 @@
 function [str] = event_name()
 
-path = matlab.desktop.editor.getActiveFilename;
-out  = regexp(path,'\','split');
-idx = find(strcmpi('Functions',out));
-path = fullfile(out{1:idx},'create_epochs_event\TrialEvent');
+path  = matlab.desktop.editor.getActiveFilename;
+out   = regexp(path,'\','split');
+idx   = find(strcmpi('Functions',out));
+path  = fullfile(out{1:idx},'create_epochs_event\TrialEvent');
 files = dir(path);
 
 for i = 3:numel(files)

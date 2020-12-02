@@ -1,5 +1,11 @@
 %The functions created by Jesper Hagelskjær
-% add_analysis
+
+% initcb                         ()
+% addnewcells_J                  ()  
+
+
+%%
+% add_analysis()
 % average_firing_rate          (done)
 % AUC_reward_choice            (done)!
 % Baiting                      (done)
@@ -15,12 +21,23 @@
 % timing_CB_recording        
 % checking_kernels        
 
+%% Real time function
+% template_real_time            () %building the template from the light pulse
+
+
+
 %to run the different functions load the cellbase into the workspace and then run the different script given below
 %some of the script requires access to other variable given in other script
 %if they are not in these variable is not in the TheMatrix you will be
 %asked to run the given script 
-%%
+%% initcb
 
+% initcb('name','overwrite',1)
+
+% name -> the name of your new cellbase :)
+% 'overwrite' -> [1/0] 1) will create TrialEvents.mat file and overwrite it if already exists   
+
+%% 
 % add_analysis(function handle,add_to_matrix,'property_names',{names_of_output variable},'arglist',{names_of__input_variable)
 
 %e.g.

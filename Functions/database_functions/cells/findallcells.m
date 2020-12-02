@@ -67,13 +67,22 @@ for rdir = 1:length(ratdir)   % animal loop
             cellfiles = listfiles(fullfile(fullsessiondir,cell_pattern));
         else
             fullsessiondir = fullfile(ratpath,char(sessiondir(sdir)));
-            cellfiles = listfiles(fullsessiondir,'.mat');
+            cellfiles = listfiles(fullfile(ratpath,char(sessiondir(sdir))),'TT%d_%d.mat');
+        end
+        
+        
+        %(J)
+        if isempty(cellfiles) %if empty is clustering from kilosort/Dsort must create the TT_files
+            if ~isempty(char(sessiondir(sdir)))
+                Kilosort2CellID_J(fullsessiondir)
+                cellfiles = listfiles(fullsessiondir,'.mat');
+            end
         end
         
         % Convert filenames to cell IDs
         for fnum = 1:length(cellfiles)   % filename loop
             fname = fullfile(fullsessiondir,char(cellfiles(fnum)));
-            cellid = fname2cellid(fname); % change this function(jh)
+            cellid = fname2cellid_J(fname); % change this function(jh)
             if cellid ~= 0
                 allcellids{k} = cellid;
                 k = k+1;
