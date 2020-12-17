@@ -26,6 +26,6 @@ for j = TTL_value
     
     PCA_Mahanobilis_allCh(wSpikes_RT,wSpikes_on(idx)) 
 end
-close all
+%close all
 end
 

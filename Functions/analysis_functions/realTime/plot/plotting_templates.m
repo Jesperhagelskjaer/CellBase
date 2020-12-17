@@ -7,7 +7,8 @@ if f.plotting
         chs = 1:32;
         [w, h] = deal(6);
     else
-        [w, h] = deal(ceil(numel(chs)/2));
+        [h] = deal(ceil(numel(chs)/2));%+1;
+        [w] = deal(ceil(numel(chs)/2));
     end
     legend_name{f.TT + 1} = 'RT';
     for tt = 1:f.TT
@@ -23,10 +24,9 @@ if f.plotting
         hold on
         for tt = 1:f.TT
             plot(Templates(:,chs(ch),tt))
-            xlabel('samples')
-            
+            xlabel('samples') 
         end
-        plot(template_RT(:,chs(ch)))
+        plot(template_RT(:,chs(ch)),'*')
         title(['Ch - ',num2str(chs(ch))])
         ylim([min_V max_V])
         legend(legend_name)
