@@ -1,8 +1,9 @@
 function [varargout] = template_real_time(cellid,varargin)
 
 
-%add_analysis(@template_real_time,0,'property_names',{'confusion'},'arglist',{});
-%add_analysis(@template_real_time,0,'property_names',{'confusion'},'arglist',{'cells',[1]});
+%add_analysis(@template_real_time,1,'property_names',{'confusion','mahal_d','d_isolation'},'arglist',{});
+%add_analysis(@template_real_time,0,'property_names',{'confusion','mahal_d','d_isolation'},'arglist',{});
+%add_analysis(@template_real_time,0,'property_names',{'confusion','mahal_d','d_isolation'},'arglist',{'cells',[13]});
 %add_analysis(@template_real_time,1,'property_names',{});
 
 %delanalysis(@template_real_time)
@@ -17,22 +18,20 @@ if (cellid == 0)
     prs          = inputParser;
     
     addParameter(prs,'path',getpref('cellbase').datapath,@ischar) %
-    addParameter(prs,'type','bandpass')   %
+    addParameter(prs,'type','bandpass')   % filtering
     addParameter(prs,'direction',2)       % 1 -> forward, 2 -> forward and backswards
-    addParameter(prs,'filter',1)          %
+    addParameter(prs,'filter',1)          % filtering
     addParameter(prs,'fsslow',8000)       % filtering
     addParameter(prs,'fshigh',300)        % filtering
     addParameter(prs,'fs',30000) %        % the recording system hertz
     addParameter(prs,'order',3) %         % the order of the filter
     addParameter(prs,'useBitmVolt',1)     % converts from bits to volts
     addParameter(prs,'TTL',[1 2])         % The TTL for the templates on the Neuralinks system
-    addParameter(prs,'xAxis_on',[-12 20]) % 
-    addParameter(prs,'shift',-15)         % online time (range should be as small as possible)
-    addParameter(prs,'xAxis',[-15 15])    % online time (range should be as small as possible)
-    addParameter(prs,'extra',10)          % online time (range should be as small as possible)
-    addParameter(prs,'invert',0)          % invert the electrical signal
-    addParameter(prs,'PCA_cut',[-10 24])  % cutting range for the PCA
-    addParameter(prs,'alignment','min')   % align each spike to the minimum amplitude
+    addParameter(prs,'shift',-15)         % Since the TTL trigger after the spike happened a shift is need so the axis center on the minimum deflection on the spike
+    addParameter(prs,'xAxis',[-15 15])    % The range to cut for the template building
+    addParameter(prs,'invert',0)          % Invert the electrical signal
+    addParameter(prs,'PCA_cut',[-10 24])  % Cutting-range for the PCA
+    addParameter(prs,'alignment','min')   % Align each spike to the minimum amplitude
     addParameter(prs,'plotting',1)        % plot the data
     addParameter(prs,'median_filter',1)   % meadian filter used after butterwards filter 
     addParameter(prs,'TT',3)              % number of template from Dsort to compare with Jsearch
@@ -50,17 +49,19 @@ end
 idx        = findcellstr(CELLIDLIST',cellid); % CELLIDLIST must be column vector
 POS        = findcellpos('animal',r,'session',s);
 
-[confusion,NSSD] = deal({});
+[confusion,NSSD,mahal_d,d_isolation] = deal({});
 if POS(1) == idx
     [dataF,Timestamps] = loading_and_preprocessing(r,s);
 
-    [confusion,NSSD]   = building_template_clustering(cellid,dataF,Timestamps);
+    [confusion,NSSD,mahal_d, d_isolation]   = building_template_clustering(cellid,dataF,Timestamps);
     
 end
 
-varargout{1}.confusion  = confusion;
-varargout{1}.NSSD       = NSSD;
-%close all
+varargout{1}.confusion   = confusion;
+varargout{1}.NSSD        = NSSD;
+varargout{1}.mahal_d     = mahal_d;
+varargout{1}.d_isolation = d_isolation;
+close all
 end
 
 

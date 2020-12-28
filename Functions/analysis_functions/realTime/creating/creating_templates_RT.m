@@ -2,7 +2,7 @@ function [waveforms,template,tSpikes_RT] = creating_templates_RT(dataF,Timestamp
 
 global f
 
-xAxis      = (f.xAxis_on(1)-f.extra:f.xAxis_on(2)+f.extra)+f.shift;
+xAxis      = (f.xAxis(1):f.xAxis(2))+f.shift;
 time_RT    = TTLs_time(TTLs); %one correspond to laserPulse on
 waveforms  = zeros(numel(xAxis),32,numel(time_RT));
 tSpikes_RT = zeros(numel(time_RT),1);

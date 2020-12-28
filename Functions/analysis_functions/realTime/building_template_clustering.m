@@ -1,4 +1,4 @@
-function [confusion,NSSD] = building_template_clustering(cellid,dataF,Timestamps)
+function [confusion,NSSD,mahal_d,d_isolation] = building_template_clustering(cellid,dataF,Timestamps)
 global f
 
 [r,s,~,~]  = cellid2tags(cellid);
@@ -12,7 +12,7 @@ fullNameEvent    = fullfile(getpref('cellbase','datapath'),r,s,'Events.nev');
 TTL_value        = unique(TTLs);
 TTL_value        = TTL_value(ismember(TTL_value,f.TTL));
 
-[confusion] = deal({});
+[confusion,mahal_d,d_isolation] = deal({});
 NSSD        = [];
 for j = TTL_value
 
@@ -24,7 +24,7 @@ for j = TTL_value
     
     [confusion{end+1}]    = correlate_timing(tSpikes_RT,tSpikes_on_sim);
     
-    PCA_Mahanobilis_allCh(wSpikes_RT,wSpikes_on(idx)) 
+    [mahal_d{end+1},d_isolation{end+1}] = PCA_Mahanobilis_allCh(wSpikes_RT,wSpikes_on(idx)); 
 end
 %close all
 end

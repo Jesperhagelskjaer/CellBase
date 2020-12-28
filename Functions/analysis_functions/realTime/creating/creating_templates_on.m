@@ -1,8 +1,8 @@
-function [Templates_on,tSpikes_on,WSpikes_on] = creating_templates_on(rez,dataF)
+function [Templates_on,tSpikes,WSpikes] = creating_templates_on(rez,dataF)
 
 global f
 
-xAxis     = f.xAxis_on(1):f.xAxis_on(2);                                       %creating the range to take out 
+xAxis     = f.xAxis(1):f.xAxis(2);                                       %creating the range to take out 
 Templates_on = zeros(numel(xAxis),32,size(rez.M_template,3));
 
 for i = 1:size(rez.M_template,3)
@@ -21,8 +21,8 @@ for i = 1:size(rez.M_template,3)
         sWaveforms(:,:,ii) = dataF(xAxis+time(ii),:);
     end
     Templates_on(:,:,i) = mean(sWaveforms,3);
-    tSpikes_on{i}       = time; %need to be here change code
-    WSpikes_on{i}       = sWaveforms;
+    tSpikes{i}       = time; %need to be here change code
+    WSpikes{i}       = sWaveforms;
 end
 end
 
