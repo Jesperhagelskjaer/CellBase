@@ -1,4 +1,6 @@
 function [score] = PCA_calculation(str,method,data,idx)
+global f
+
 [score] = deal([]);
 threshold = 65;
 if strcmp(method,'single')
@@ -51,17 +53,18 @@ for t = 1:2
             if ~isempty(chs)
                 break
             end
-        end 
+        end
     end
     chs_start = chs;
 end
 
 
 
+
 if isempty(chs)
     b = 2
 else
-
+    
     %figure,plot(squeeze(PCA_matrix(:,32,:)))
     %figure,surf(mean(data{idx},3))
     %calculating the combined PCA
@@ -87,6 +90,14 @@ else
             end
         end
     end
+    count = 0;
+    for cl = 1:cls
+        idx = T == cl;
+        if sum(idx) > 50
+            count = count + 1;
+            idx_cl_shading(:,count) = logical(T == cl);
+        end
+    end
     
     figure
     subplot(1,numel(chs)+2,[1 2])
@@ -107,10 +118,18 @@ else
     
     for m = 1:numel(chs)
         subplot(1,numel(chs)+2,m+2)
-        try
-            plot(cl_p{m})
-            ylim([minV maxV])
-        catch
+        if f.shading
+            for cl = 1:size(idx_cl_shading,2)
+                data_shade = squeeze(shiftMatrix(:,chs(m),idx_cl_shading(:,cl)));
+                stdshade_sorting(data_shade,[])
+            end
+        else
+            
+            try
+                plot(cl_p{m})
+                ylim([minV maxV])
+            catch
+            end
         end
         title(['chs ' num2str(chs(m))])
     end

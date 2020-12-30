@@ -37,6 +37,7 @@ if (cellid == 0)
     addParameter(prs,'TT',3)              % number of template from Dsort to compare with Jsearch
     addParameter(prs,'spline',1)          %[0/1] spline the spikes    
     addParameter(prs,'purity',1)          %[0/1] look at the contamination for each cluster on each on
+    addParameter(prs,'shading',1)         %blot the shade
     parse(prs,varargin{:})
     
     f = prs.Results;
