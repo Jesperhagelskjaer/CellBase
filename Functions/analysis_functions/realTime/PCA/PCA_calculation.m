@@ -1,17 +1,15 @@
-function [score] = PCA_calculation(str,method,data,idx)
-global f
+function [score] = PCA_calculation(str,method,data,idx,Latent,Explained)
 
-[score] = deal([]);
-threshold = 65;
-if strcmp(method,'single')
-    threshold = [30 32] ; %lowevering the thershold if one looking at one cluster
-    threshold_la =[0.015 0.01] ;
-    sum_th = [0.01 0.02];
-elseif strcmp(method,'all')
-    threshold = [65 70];
-    threshold_la = 0.001;
-    sum_th = 0.004;
+if strcmp(method,'all')
     idx = 1:numel(data);
+    tt = sum(cellfun('size',data,3));
+    Idx = false(tt,numel(data));
+    end_v = 0;
+    for i = 1:numel(data)
+        start = 1 + end_v;
+        end_v = size(data{i},3) + start - 1;
+        Idx(start:end_v,i) = true;
+    end
 end
 
 chs_start       = 1:32;
@@ -20,121 +18,77 @@ for t = 1:2
     [PCA_matrix]       = normalisation_spikes(shiftMatrix);
     [latent,explained] = deal(zeros(size(PCA_matrix,1),32));
     [score_com,chs]    = deal([]);
-    score2              = {};
+    score2             = {};
     for i = chs_start
         [~,score2{i},latent(:,i),~,explained(:,i)] = pca(squeeze(PCA_matrix(:,i,:))');
     end
     for i = chs_start
         if strcmp(method,'all')
-            if (explained(1,i) > threshold(t))
+            if (explained(1,i) > max(Explained(1,:)))
                 score_com = [score_com score2{i}];
                 chs       = [chs i];
             end
         elseif strcmp(method,'single')
-            if (latent(1,i) > threshold_la(t) && sum(explained(end-17:end,i),1) > sum_th(t)) || explained(1,i) > 70
-                score_com = [score_com score2{i}];
-                chs       = [chs i];
-            elseif sum(explained(end-17:end,i),1) > 0.03
+            if sum(explained(end-17:end,i),1) > sum(Explained(end-17:end,i),1) || explained(1,i) > 70 %(latent(1,i) > threshold_la(t) &&
                 score_com = [score_com score2{i}];
                 chs       = [chs i];
             end
         end
     end
-    if isempty(chs)
-        threshold = 0.03;
-        while 1
-            threshold = threshold - 0.005;
-            for i = chs_start
-                if sum(explained(end-17:end,i),1) > threshold
-                    score_com = [score_com score2{i}];
-                    chs       = [chs i];
-                end
-            end
-            if ~isempty(chs)
-                break
-            end
-        end
-    end
+    [chs,score_com] = last_resort(explained,chs,score_com);
     chs_start = chs;
 end
 
+%figure,plot(squeeze(PCA_matrix(:,32,:)))
+%figure,surf(mean(PCA_matrix,3))
+%figure,surf(mean(data{idx},3))
+%calculating the combined PCA
+[~,score,~,~,~] = pca(score_com);
+
+%plotting the PCA space
+%plot_PCA_space(score,c,idx,str)
+
+Z = linkage(score(:,1:3),'average','chebychev');
+%dendrogram(Z)
+T = cluster(Z,'cutoff',0.6,'Criterion','distance');
 
 
-
-if isempty(chs)
-    b = 2
-else
-    
-    %figure,plot(squeeze(PCA_matrix(:,32,:)))
-    %figure,surf(mean(data{idx},3))
-    %calculating the combined PCA
-    [~,score,~,~,~] = pca(score_com);
-    
-    %plotting the PCA space
-    %plot_PCA_space(score,c,idx,str)
-    
-    Z = linkage(score(:,1:3),'average','chebychev');
-    %dendrogram(Z)
-    T = cluster(Z,'cutoff',0.6,'Criterion','distance');
-    maxV = max(shiftMatrix(:));
-    minV = min(shiftMatrix(:));
-    cls  =  max(T);
-    
-    for ch = 1:numel(chs)
-        count = 1;
-        for cl = 1:cls
-            idx_cl = T == cl;
-            if sum(idx_cl) > 50
-                cl_p{ch}(:,count) = mean(shiftMatrix(:,chs(ch),idx_cl),3);
-                count = count + 1;
-            end
-        end
-    end
-    count = 0;
-    for cl = 1:cls
-        idx = T == cl;
-        if sum(idx) > 50
-            count = count + 1;
-            idx_cl_shading(:,count) = logical(T == cl);
-        end
-    end
-    
-    figure
+figure
+if strcmp(method,'single')
     subplot(1,numel(chs)+2,[1 2])
-    if strcmp(method,'single')
-        scatter3(score(:,1),score(:,2),score(:,3),[],T)
-    elseif strcmp(method,'all')
-        hold on
-        c = [];
-        for cl = 1:numel(data)
-            c = [c; ones(size(data{cl},3),1)*cl];
-        end
-        for i = 1:c(end)
-            idx = c == i;
-            plot3(score(idx,1),score(idx,2),score(idx,3),'.')
-        end
-    end
+    scatter3(score(:,1),score(:,2),score(:,3),[],T)
     title(str);xlabel('1-component'),ylabel('2-component');zlabel('3-component')
-    
+    c = parula(numel(unique(T)));
     for m = 1:numel(chs)
         subplot(1,numel(chs)+2,m+2)
-        if f.shading
-            for cl = 1:size(idx_cl_shading,2)
-                data_shade = squeeze(shiftMatrix(:,chs(m),idx_cl_shading(:,cl)));
-                stdshade_sorting(data_shade,[])
-            end
-        else
-            
-            try
-                plot(cl_p{m})
-                ylim([minV maxV])
-            catch
-            end
+        for cl = 1:numel(unique(T))
+            data_shade = squeeze(shiftMatrix(:,chs(m),logical(cl == T)));
+            stdshade_sorting(data_shade,c(cl,:))
         end
         title(['chs ' num2str(chs(m))])
+        xlabel('Time [Samples]') %not nes. correct
+        ylabel('Voltage [uV]')  %not nes. correct
     end
+    h = findobj(gcf,'type','axes');
+    for k=1:numel(chs)-1
+        yi=get(h(1:numel(chs)),'YLim');
+    end
+    Max = max(cellfun(@max,yi,'uni',true));
+    Min = min(cellfun(@min,yi,'uni',true));
+    set(h(1:numel(chs)),'YLim',[Min Max]);
+ 
+    
+elseif strcmp(method,'all')
+    for i = 1:numel(data)
+        hold on
+        plot3(score(Idx(:,i),1),score(Idx(:,i),2),score(Idx(:,i),3),'.')
+    end
+    title(str);xlabel('1-component'),ylabel('2-component');zlabel('3-component')
 end
+
 end
+
+
 
 
 

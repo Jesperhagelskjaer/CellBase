@@ -8,7 +8,7 @@ function stdshade_sorting(amatrix,acolor,alpha,F,smth,factor)
 % - smth defines the smoothing factor (default is no smooth)
 % JH 2020/28/23
 
-if exist('acolor','var')==0 
+if exist('acolor','var')==0 || isempty(acolor)
     acolor='r'; 
 end
 
@@ -17,7 +17,7 @@ if exist('alpha','var')==0   || isempty(alpha)
 end
 
 if exist('F','var')==0       || isempty(F)
-    F = 1:size(amatrix,1);
+    F = (1:size(amatrix,1))';
 end
 
 if exist('smth','var')== 0   || isempty(smth)
@@ -29,11 +29,11 @@ if exist('factor','var')== 0 || isempty(factor)
 end  
 
 
-amean = smooth(mean(amatrix,2),smth)';
-astd  = (std(amatrix,[],2)*factor)'; % to get std shading
- 
-fill([F fliplr(F)],[amean+astd fliplr(amean-astd)],acolor,'facealpha',alpha,'linestyle','none');
+amean = smooth(mean(amatrix,2),smth);
+astd  = std(amatrix,[],2)*factor; % to get std shading
+
+fill([F; flip(F)],[amean+astd; flip(amean-astd)],acolor,'facealpha',alpha,'linestyle','none');
 hold on;
-plot(F,amean,acolor,'linewidth',1.5); %% change color or linewidth to adjust mean line
+plot(F,amean,'color',acolor,'linewidth',1.5); %% change color or linewidth to adjust mean line
 
 end

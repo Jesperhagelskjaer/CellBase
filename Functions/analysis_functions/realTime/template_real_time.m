@@ -10,6 +10,11 @@ function [varargout] = template_real_time(cellid,varargin)
 
 global f
 global CELLIDLIST
+
+persistent dataF
+persistent POS_old
+
+
 method       = varargin{1};
 
 if (cellid == 0)
@@ -50,13 +55,28 @@ end
 idx        = findcellstr(CELLIDLIST',cellid); % CELLIDLIST must be column vector
 POS        = findcellpos('animal',r,'session',s);
 
-[confusion,NSSD,mahal_d,d_isolation] = deal({});
-if POS(1) == idx
-    [dataF,Timestamps] = loading_and_preprocessing(r,s);
-
-    [confusion,NSSD,mahal_d, d_isolation]   = building_template_clustering(cellid,dataF,Timestamps);
-    
+error = 0;
+load_data = 1;
+if all(ismember(POS_old, POS)) && ~isempty(dataW)
+    if isnan(dataW(1,1))
+        error = 1;
+    else
+        load_data = 0;
+    end
 end
+
+
+
+
+[confusion,NSSD,mahal_d,d_isolation] = deal({});
+
+if POS(1) == idx || load_data  
+    [dataF,Timestamps] = loading_and_preprocessing(r,s,'csc');
+end
+
+%    [confusion,NSSD,mahal_d, d_isolation]   = building_template_clustering(cellid,dataF,Timestamps);
+    
+
 
 varargout{1}.confusion   = confusion;
 varargout{1}.NSSD        = NSSD;
