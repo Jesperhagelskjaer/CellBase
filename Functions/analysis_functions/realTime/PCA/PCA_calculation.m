@@ -1,5 +1,7 @@
 function [score] = PCA_calculation(str,method,data,idx,Latent,Explained)
 
+global f
+
 if strcmp(method,'all')
     idx = 1:numel(data);
     tt = sum(cellfun('size',data,3));
@@ -47,43 +49,50 @@ end
 
 %plotting the PCA space
 %plot_PCA_space(score,c,idx,str)
-
-Z = linkage(score(:,1:3),'average','chebychev');
-%dendrogram(Z)
-T = cluster(Z,'cutoff',0.6,'Criterion','distance');
-
-
-figure
-if strcmp(method,'single')
-    subplot(1,numel(chs)+2,[1 2])
-    scatter3(score(:,1),score(:,2),score(:,3),[],T)
-    title(str);xlabel('1-component'),ylabel('2-component');zlabel('3-component')
-    c = parula(numel(unique(T)));
-    for m = 1:numel(chs)
-        subplot(1,numel(chs)+2,m+2)
-        for cl = 1:numel(unique(T))
-            data_shade = squeeze(shiftMatrix(:,chs(m),logical(cl == T)));
-            stdshade_sorting(data_shade,c(cl,:))
+if f.purityAll || f.purity
+    bool = 0;
+    if size(score,1) < 150000 %number of spikes to cluster if larger it requires to much memory
+        Z = linkage(score(:,1:3),'average','chebychev');
+        bool = 1;
+    end
+        
+    %dendrogram(Z)
+    if bool
+        T = cluster(Z,'cutoff',0.6,'Criterion','distance');
+        
+        figure
+        if strcmp(method,'single')
+            subplot(1,numel(chs)+2,[1 2])
+            scatter3(score(:,1),score(:,2),score(:,3),[],T)
+            title(str);xlabel('1-component'),ylabel('2-component');zlabel('3-component')
+            c = parula(numel(unique(T)));
+            for m = 1:numel(chs)
+                subplot(1,numel(chs)+2,m+2)
+                for cl = 1:numel(unique(T))
+                    data_shade = squeeze(shiftMatrix(:,chs(m),logical(cl == T)));
+                    stdshade_sorting(data_shade,c(cl,:))
+                end
+                title(['chs ' num2str(chs(m))])
+                xlabel('Time [Samples]') %not nes. correct
+                ylabel('Voltage [uV]')  %not nes. correct
+            end
+            h = findobj(gcf,'type','axes');
+            for k=1:numel(chs)-1
+                yi=get(h(1:numel(chs)),'YLim');
+            end
+            Max = max(cellfun(@max,yi,'uni',true));
+            Min = min(cellfun(@min,yi,'uni',true));
+            set(h(1:numel(chs)),'YLim',[Min Max]);
+            
+            
+        elseif strcmp(method,'all')
+            for i = 1:numel(data)
+                hold on
+                plot3(score(Idx(:,i),1),score(Idx(:,i),2),score(Idx(:,i),3),'.')
+            end
+            title(str);xlabel('1-component'),ylabel('2-component');zlabel('3-component')
         end
-        title(['chs ' num2str(chs(m))])
-        xlabel('Time [Samples]') %not nes. correct
-        ylabel('Voltage [uV]')  %not nes. correct
     end
-    h = findobj(gcf,'type','axes');
-    for k=1:numel(chs)-1
-        yi=get(h(1:numel(chs)),'YLim');
-    end
-    Max = max(cellfun(@max,yi,'uni',true));
-    Min = min(cellfun(@min,yi,'uni',true));
-    set(h(1:numel(chs)),'YLim',[Min Max]);
- 
-    
-elseif strcmp(method,'all')
-    for i = 1:numel(data)
-        hold on
-        plot3(score(Idx(:,i),1),score(Idx(:,i),2),score(Idx(:,i),3),'.')
-    end
-    title(str);xlabel('1-component'),ylabel('2-component');zlabel('3-component')
 end
 
 end

@@ -1,4 +1,4 @@
-function [spsth, conv_psth] = smoothed_psth(psth,g)
+function [spsth, conv_psth] = smoothed_psth(psth)
 %SMOOTHED_PSTH   Smoothed PSTH.
 %   [SPSTH, CONV_PSTH] = SMOOTHED_PSTH(PSTH,DT,SIGMA) calculates smoothed
 %   PSTH (SPSTH) from PSTH at time resolution DT. SIGMA determines the
@@ -7,12 +7,14 @@ function [spsth, conv_psth] = smoothed_psth(psth,g)
 %
 %   See also BINRASTER2PSTH.
 
-%   Edit log: BH 6/23/11
+%   Edit log: BH 6/23/11 JH
+
+global f
 
 % Make smoothed PSTH
-if g.sigma > 0
-    kernel_time = -g.sigma_ex*g.sigma:g.dt:g.sigma_ex*g.sigma;      % 3 sigma wide
-    kernel = normpdf(kernel_time,0,g.sigma);       % define smoothing kernel
+if f.sigma > 0
+    kernel_time = -f.sigma_ex*f.sigma:f.dt:f.sigma_ex*f.sigma;      % 3 sigma wide
+    kernel = normpdf(kernel_time,0,f.sigma);       % define smoothing kernel
     conv_psth = conv(psth,kernel);               % convolve filter and psth
     
     steps = length(kernel);                     % the next 4 lines make sure to clip the ends of the convolved array correctly.

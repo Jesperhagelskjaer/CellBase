@@ -1,4 +1,4 @@
-function stdshade_sorting(amatrix,acolor,alpha,F,smth,factor)
+function stdshade_sorting(amatrix,acolor,alpha,F,smth,factor,amatrix_SD)
 % usage: stdshading(amatrix,alpha,acolor,F,smth)
 % plot mean and sem/std coming from a matrix of data, at which each row is an
 % observation. sem/std is shown as shading.
@@ -28,9 +28,13 @@ if exist('factor','var')== 0 || isempty(factor)
     factor = 1; 
 end  
 
-
-amean = smooth(mean(amatrix,2),smth);
-astd  = std(amatrix,[],2)*factor; % to get std shading
+if size(amatrix,2) == 1
+    amean = amatrix;
+    astd  = amatrix_SD; % to get std shading
+else
+    amean = smooth(mean(amatrix,2),smth);
+    astd  = std(amatrix,[],2)*factor; % to get std shading
+end
 
 fill([F; flip(F)],[amean+astd; flip(amean-astd)],acolor,'facealpha',alpha,'linestyle','none');
 hold on;

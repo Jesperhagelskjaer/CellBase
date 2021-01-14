@@ -13,24 +13,33 @@ function [mahal_d,d_isolation] = PCA_Mahanobilis_allCh(W_spikes_RT,W_spikes_on_a
 
 
 %the data is cell arrays (time x channel x trace)
-global f 
+global f
 data         = W_spikes_on_a;
 data{end+1}  = W_spikes_RT;
-[Latent,Explained] = random_template_noise(dataF,10000,100);
+
+
 c = [];
-for cl = 1:size(data,2)
-    if f.purity
-        [score] = PCA_calculation('template PCA','single',data,cl,Latent,Explained);
-    end
+for cl = 1:size(data,2)   
     c = [c; ones(size(data{cl},3),1)*cl];
-end 
+end
 
+if f.purity || f.purityAll
+    [Latent,Explained] = random_template_noise(dataF,10000,100);
+end
 
-%plotting the channels where the templates are defined on by the PCA method
+if f.purity
+    for cl = 1:size(data,2)
+        if f.purity
+            [score] = PCA_calculation('template PCA','single',data,cl,Latent,Explained);
+        end
+    end
+end
 
-[score]  = PCA_calculation('Templates PCA','all',data,[],Latent,Explained);
-for i = 1:size(data,2)     
-    score_h{i} = score(logical(c == i),1:3);
+if f.purityAll
+    [score]  = PCA_calculation('Templates PCA','all',data,[],Latent,Explained);
+    for i = 1:size(data,2)
+        score_h{i} = score(logical(c == i),1:3);
+    end
 end
 
 % Calculates the differente seperation variable

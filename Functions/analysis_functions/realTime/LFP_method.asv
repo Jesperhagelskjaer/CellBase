@@ -1,12 +1,11 @@
-function [varargout] = template_cleaness(cellid,varargin)
+function [varargout] = LFP_method(cellid,varargin)
 
+%add_analysis(@LFP_method,1,'property_names',{},'arglist',{});
+%add_analysis(@LFP_method,0,'property_names',{'test'},'arglist',{});
+%add_analysis(@LFP_method,0,'property_names',{},'arglist',{'cells',[2]});
+%add_analysis(@LFP_method,1,'property_names',{});
 
-%add_analysis(@template_cleaness,1,'property_names',{'mahal_d','d_isolation'},'arglist',{});
-%add_analysis(@template_cleaness,0,'property_names',{'mahal_d','d_isolation'},'arglist',{});
-%add_analysis(@template_cleaness,0,'property_names',{'mahal_d','d_isolation'},'arglist',{'cells',[2]});
-%add_analysis(@template_cleaness,1,'property_names',{});
-
-%delanalysis(@template_cleaness)
+%delanalysis(@LFP_method)
 
 global f
 global CELLIDLIST
@@ -35,10 +34,7 @@ if (cellid == 0)
     addParameter(prs,'median_filter',1)   % meadian filter used after butterwards filter 
     addParameter(prs,'TT',3)              % number of templates to compare with main template
     addParameter(prs,'spline',1)          % [0/1] spline the spikes    
-    addParameter(prs,'purity',1)          % plotting the purity of the individual cluster
-    addParameter(prs,'purityAll',1)       % plotting the purity of the TT clusters
-    addParameter(prs,'rezName','rezfinalK')          %blot the shade
-    
+    addParameter(prs,'TTL',[1 2])         % The TTL for the templates on the Neuralinks system
     
     parse(prs,varargin{:})
     
@@ -48,22 +44,18 @@ if (cellid == 0)
     return
 end
 
-[r,s,~,~]  = cellid2tags(cellid);
-idx        = findcellstr(CELLIDLIST',cellid); % CELLIDLIST must be column vector
-POS        = findcellpos('animal',r,'session',s);
+[r,s,~,~]    = cellid2tags(cellid);
+POS          = findcellpos('animal',r,'session',s);
+[dataF{1},timestamps{2}] = loading_and_preprocessing(r,s,'nrd');
+R{1} = r;S{1} = s; 
+idx          = findcellstr(CELLIDLIST',CELLIDLIST{POS(end)+1}); % CELLIDLIST must be column vector
+[r,s,~,~]    = cellid2tags(CELLIDLIST{idx});
+[dataF{2},timestamps{2}] = loading_and_preprocessing(r,s,'nrd');
 
-if POS(1) == idx || all(size(dataOld) == 0) 
-    [dataF,~] = loading_and_preprocessing(r,s,'epysh');
-else
-    dataF      = dataOld;
+
+R{2} = r;S{2} = s; 
+waveforms_LFP(R,S,dataF,timestamps)
+varargout{1}.test = 1
+
 end
 
-[NSSD,mahal_d,d_isolation] = building_template_clustering_validation(cellid,dataF);
-
-dataOld       = dataF;
-
-varargout{1}.NSSD        = NSSD;
-varargout{1}.mahal_d     = mahal_d;
-varargout{1}.d_isolation = d_isolation;
-close all
-end

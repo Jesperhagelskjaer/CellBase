@@ -3,7 +3,7 @@ function [varargout] = template_cleaness(cellid,varargin)
 
 %add_analysis(@template_cleaness,1,'property_names',{'mahal_d','d_isolation'},'arglist',{});
 %add_analysis(@template_cleaness,0,'property_names',{'mahal_d','d_isolation'},'arglist',{});
-%add_analysis(@template_cleaness,0,'property_names',{'mahal_d','d_isolation'},'arglist',{'cells',[13]});
+%add_analysis(@template_cleaness,0,'property_names',{'mahal_d','d_isolation'},'arglist',{'cells',[2]});
 %add_analysis(@template_cleaness,1,'property_names',{});
 
 %delanalysis(@template_cleaness)
@@ -35,7 +35,8 @@ if (cellid == 0)
     addParameter(prs,'median_filter',1)   % meadian filter used after butterwards filter 
     addParameter(prs,'TT',3)              % number of templates to compare with main template
     addParameter(prs,'spline',1)          % [0/1] spline the spikes    
-    addParameter(prs,'purity',1)          % plotting the purity of the the individual cluster
+    addParameter(prs,'purity',0)          % plotting the purity of the individual cluster
+    addParameter(prs,'purityAll',1)       % plotting the purity of the TT clusters
     addParameter(prs,'rezName','rezfinalK')          %blot the shade
     
     
@@ -51,8 +52,8 @@ end
 idx        = findcellstr(CELLIDLIST',cellid); % CELLIDLIST must be column vector
 POS        = findcellpos('animal',r,'session',s);
 
-if POS(1) == idx || isempty('dataOld') 
-    [dataF,~] = loading_and_preprocessing(r,s,'epysh');
+if POS(1) == idx || all(size(dataOld) == 0) 
+    [dataF,~] = loading_and_preprocessing(r,s,'ephys');
 else
     dataF      = dataOld;
 end

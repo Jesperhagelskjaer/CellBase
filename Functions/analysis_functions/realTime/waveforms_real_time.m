@@ -1,11 +1,11 @@
-function [varargout] = template_real_time(cellid,varargin)
+function [varargout] = waveforms_real_time(cellid,varargin)
 
-%add_analysis(@template_real_time,1,'property_names',{'confusion','mahal_d','d_isolation'},'arglist',{});
-%add_analysis(@template_real_time,0,'property_names',{'confusion','mahal_d','d_isolation'},'arglist',{});
-%add_analysis(@template_real_time,0,'property_names',{'confusion','mahal_d','d_isolation'},'arglist',{'cells',[13]});
-%add_analysis(@template_real_time,1,'property_names',{});
+%add_analysis(@waveforms_real_time,1,'property_names',{},'arglist',{});
+%add_analysis(@waveforms_real_time,0,'property_names',{},'arglist',{});
+%add_analysis(@waveforms_real_time,0,'property_names',{},'arglist',{'cells',[13]});
+%add_analysis(@waveforms_real_time,1,'property_names',{});
 
-%delanalysis(@template_real_time)
+%delanalysis(@waveforms_real_time)
 
 global f
 global CELLIDLIST
@@ -29,18 +29,16 @@ if (cellid == 0)
     addParameter(prs,'fs',30000) %        % the recording system hertz
     addParameter(prs,'order',3) %         % the order of the filter
     addParameter(prs,'useBitmVolt',1)     % converts from bits to volts
-    addParameter(prs,'TTL',[1 2])         % The TTL for the templates on the Neuralinks system
     addParameter(prs,'shift',-15)         % Since the TTL trigger after the spike happened a shift is need so the axis center on the minimum deflection on the spike
     addParameter(prs,'xAxis',[-15 15])    % The range to cut for the template building
     addParameter(prs,'invert',0)          % Invert the electrical signal
-    addParameter(prs,'PCA_cut',[-10 24])  % Cutting-range for the PCA
-    addParameter(prs,'alignment','min')   % Align each spike to the minimum amplitude
     addParameter(prs,'plotting',1)        % plot the data
     addParameter(prs,'median_filter',1)   % meadian filter used after butterwards filter 
-    addParameter(prs,'TT',3)              % number of template from Dsort to compare with Jsearch
-    addParameter(prs,'spline',1)          %[0/1] spline the spikes    
-    addParameter(prs,'purity',1)          %[0/1] look at the contamination for each cluster on each on
-    addParameter(prs,'shading',1)         %blot the shade
+    addParameter(prs,'TTL',[1 2])         % The TTL for the templates on the Neuralinks system
+    addParameter(prs,'ch_validation',1)   %plot only the channels the pass the PCA-noise test uses spline
+    addParameter(prs,'spline',1)          %[0/1] spline the spikes 
+    addParameter(prs,'PCA_cut',[-10 24])  % Cutting-range for the PCA
+    addParameter(prs,'alignment','min')   % Align each spike to the minimum amplitude
     parse(prs,varargin{:})
     
     f = prs.Results;
@@ -53,26 +51,18 @@ end
 idx        = findcellstr(CELLIDLIST',cellid); % CELLIDLIST must be column vector
 POS        = findcellpos('animal',r,'session',s);
 
-if POS(1) == idx || all(size(dataOld) == 0) 
-    [dataF,~] = loading_and_preprocessing(r,s,'epysh');
-else
-    dataF      = dataOld;
+load_data = 1;
+if all(ismember(POS_old, POS)) && ~isempty(dataF)
+    load_data = 0;
 end
 
-[confusion,NSSD,mahal_d,d_isolation] = deal({});
 if POS(1) == idx || load_data  
-    [dataF,Timestamps] = loading_and_preprocessing(r,s,'csc');
+    [dataF,Timestamps] = loading_and_preprocessing(r,s,'nrd');
 end
 
-[confusion,NSSD,mahal_d, d_isolation]  = building_template_clustering(cellid,dataF,Timestamps);
-    
+getting_waveforms(cellid,dataF,Timestamps)
 
+varargout{1}.test   = 1;
 
-varargout{1}.confusion   = confusion;
-varargout{1}.NSSD        = NSSD;
-varargout{1}.mahal_d     = mahal_d;
-varargout{1}.d_isolation = d_isolation;
-close all
 end
-
 
