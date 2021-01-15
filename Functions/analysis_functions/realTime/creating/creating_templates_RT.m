@@ -15,7 +15,6 @@ end
 
 template          = mean(waveforms,3);
 
-figure
-surf(template)
+
 end
 
