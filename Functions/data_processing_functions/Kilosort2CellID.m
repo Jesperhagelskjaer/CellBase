@@ -7,7 +7,7 @@ clear all; clc; close all;
 rootdir = cd;
 clear cd;
 session = dir;
-session = session(3:end);
+session = session(4:end);
 sessions2cluster =  1:length(session);
 sf = 30000;
 

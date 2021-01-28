@@ -14,8 +14,8 @@ for i = 1:2
     end
 end
 
-Max   = max([template{1}(:);template{2}(:)])*1.1;
-Min   = min([template{1}(:);template{2}(:)])*1.1;
+Max = max([template{1}(:);template{2}(:)])*1.1;
+Min = min([template{1}(:);template{2}(:)])*1.1;
 MaxWS = max([wSpikes{1}(:);wSpikes{2}(:)])*1.1;
 MinWS = min([wSpikes{1}(:);wSpikes{2}(:)])*1.1;
 

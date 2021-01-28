@@ -1,6 +1,6 @@
-function [NwSpikes] = normalisation_spikes(wSpikes)
+function [NwSpikes,Sum] = normalisation_spikes(wSpikes)
 
-Sum      = sum(wSpikes,2);
+Sum      = abs(sum(wSpikes));
 NwSpikes = wSpikes./Sum;
 end
 
