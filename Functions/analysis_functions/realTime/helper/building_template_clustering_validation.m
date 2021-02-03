@@ -4,6 +4,8 @@ global CELLIDLIST
 global f
 [r,s,~,~]  = cellid2tags(cellid);
 idx        = findcellstr(CELLIDLIST',cellid); % CELLIDLIST must be column vector
+POS        = findcellpos('animal',r,'session',s);
+idx        = find(POS == idx);
 
 load(fullfile(getpref('cellbase','datapath'),r,s,strcat(f.rezName,'.mat')));
 

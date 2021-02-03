@@ -1,7 +1,8 @@
-function [score,chs_start] = PCA_calculation(str,method,data,idx,Latent,Explained)
+function [score,chs_start] = PCA_calculation(str,method,data,idx)
 
 global f
-
+global Explained
+ 
 if strcmp(method,'all')
     idx = 1:numel(data);
     tt = sum(cellfun('size',data,3));

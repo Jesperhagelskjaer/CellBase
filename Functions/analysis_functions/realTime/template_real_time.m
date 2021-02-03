@@ -12,7 +12,8 @@ function [varargout] = template_real_time(cellid,varargin)
 
 global f
 global CELLIDLIST
-
+global Latent
+global Explained
 method       = varargin{1};
 
 if (cellid == 0)
@@ -41,6 +42,7 @@ if (cellid == 0)
     addParameter(prs,'spline',1)          %[0/1] spline the spikes    
     addParameter(prs,'purity',1)          %[0/1] look at the contamination for each cluster on each on
     addParameter(prs,'purityAll',1)       %Looks at all the template where all = f.TT
+    addParameter(prs,'All',1)       %Looks at all the template where all = f.TT
     addParameter(prs,'shading',1)         %blot the shade
     addParameter(prs,'std_plotting',1)     %the different waveform with
     parse(prs,varargin{:})
@@ -56,6 +58,9 @@ POS        = findcellpos('animal',r,'session',s);
 
 if POS(1) == findcellstr(CELLIDLIST',cellid) % CELLIDLIST must be column vector
     [dataF,Timestamps] = loading_and_preprocessing(r,s,'nrd');
+    if f.purity || f.purityAll || f.All
+        [Latent,Explained] = random_template_noise(dataF,100000,100);
+    end
     [confusion,NSSD,mahal_d, d_isolation]  = building_template_clustering(cellid,dataF,Timestamps);
 else
    [confusion,NSSD,mahal_d,d_isolation] = deal([]);

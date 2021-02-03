@@ -25,15 +25,9 @@ for cl = 1:size(data,2)
     c = [c; ones(size(data{cl},3),1)*cl];
 end
 
-% if f.purity || f.purityAll
-%     [Latent,Explained] = random_template_noise(dataF,10000,100);
-% end
-
 if f.purity
     for cl = 1:size(data,2)
-        if f.purity
-            [score,chs_start{cl}] = PCA_calculation('template PCA','single',data,cl,Latent,Explained);
-        end
+        [score{cl},chs_start{cl}] = PCA_calculation('template PCA','single',data,cl);
     end
 end
 
@@ -57,8 +51,8 @@ end
 
 
 
-if f.purityAll
-    [score]  = PCA_calculation('Templates PCA','all',data,[],Latent,Explained);
+if f.purityAll || f.All
+    [score]  = PCA_calculation('Templates PCA','all',data,[]);
     for i = 1:size(data,2)
         score_h{i} = score(logical(c == i),1:3);
     end
