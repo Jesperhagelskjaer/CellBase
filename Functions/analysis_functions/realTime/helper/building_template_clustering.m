@@ -24,7 +24,7 @@ for j = TTL_value
     
     [confusion{end+1}]    = correlate_timing(tSpikes_RT,tSpikes_on_sim);
     
-    [mahal_d{end+1},d_isolation{end+1}] = PCA_Mahanobilis_allCh(wSpikes_RT,wSpikes_on(idx)); 
+    [mahal_d{end+1},d_isolation{end+1}] = PCA_Mahanobilis_allCh(wSpikes_RT,wSpikes_on(idx),dataF,TTL_value(j)); 
 end
 %close all
 end

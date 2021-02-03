@@ -17,11 +17,18 @@ for ii = 1:loops
 end
 
 for i = 1:loops
+    tic
    [shiftMatrix_M] = spike_alignment(waveforms(i),1:32);
+   toc
+   tic
    [PCA_matrix]    = normalisation_spikes(shiftMatrix_M);
+   toc
+   tic
    for ii = 1:32        
         [~,~,latent{ii}(:,i),~,explained{ii}(:,i)] = pca(squeeze(PCA_matrix(:,ii,:))');
-    end
+   end
+   toc
+   fprintf('\n')
 end
 for i = 1:32
     Latent(:,i)    = max(latent{i}(:,1:3));

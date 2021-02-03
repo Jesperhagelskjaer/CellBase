@@ -1,4 +1,5 @@
 function [] = getting_waveforms(cellid,dataF,Timestamps)
+
 global f
 [r,s,~,~]        = cellid2tags(cellid);
 fullNameEvent    = fullfile(getpref('cellbase','datapath'),r,s,'Events.nev');
@@ -30,12 +31,19 @@ for j = TTL_value
         Ch = ch;
     end
     
+    Min = min(min(min(wSpikes_RT(:,Ch,:))));
+    Max = max(max(max(wSpikes_RT(:,Ch,:))));
     
     for ch = Ch
         data = squeeze(wSpikes_RT(:,ch,:));
         figure
+        subplot(2,1,1)
         plot(data)
         title(['Ch - ',num2str(ch),' --- ','TTL - ',num2str(j)]);xlabel('Time'),ylabel('Voltage [uV]')
+        ylim([Min Max])
+        subplot(2,1,2)
+        plot(mean(data,2))
+        ylim([Min Max])
     end
     
 end

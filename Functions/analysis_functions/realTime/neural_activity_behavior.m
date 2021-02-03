@@ -6,6 +6,7 @@ function [varargout] = neural_activity_behavior(cellid,varargin)
 %add_analysis(@neural_activity_behavior,1,'property_names',{});
 
 %delanalysis(@neural_activity_behavior)
+
 global f
 
 if (cellid == 0)
@@ -31,7 +32,7 @@ end
 
 PSTH_neural_activity_behavior(cellid)
 
-varargout{1}.test = 1;
+%varargout{1}.test = 1;
 
 end
 

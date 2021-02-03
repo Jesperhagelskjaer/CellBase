@@ -25,9 +25,9 @@ for cl = 1:size(data,2)
     c = [c; ones(size(data{cl},3),1)*cl];
 end
 
-% if f.purity || f.purityAll
-%     [Latent,Explained] = random_template_noise(dataF,10000,100);
-% end
+if f.purity || f.purityAll
+    [Latent,Explained] = random_template_noise(dataF,10000,100);
+end
 
 if f.purity
     for cl = 1:size(data,2)
@@ -38,7 +38,7 @@ if f.purity
 end
 
 if ~isempty(TTL)
-    if f.std_plotting 
+    if f.std_plotting &&
         for i = 1:numel(data)-1
             Chs      = unique([chs_start{end},chs_start{i}]);
             template = data{end}(:,Chs,:);

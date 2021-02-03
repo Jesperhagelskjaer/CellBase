@@ -17,7 +17,7 @@ W_Spikes(idx)      = [];
 [NSSD,Idx]        = norm_Sum_of_squred_diff(template,Templates); %(!use channels from The PCA analysis)
 W_Spikes_t        = W_Spikes(Idx); 
     
-[mahal_d,d_isolation] = PCA_Mahanobilis_allCh(w_Spikes,W_Spikes_t,dataF); 
+[mahal_d,d_isolation] = PCA_Mahanobilis_allCh(w_Spikes,W_Spikes_t,dataF,[]); 
 
 end
 

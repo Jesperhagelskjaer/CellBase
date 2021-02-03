@@ -7,8 +7,9 @@ function [varargout] = LFP_method(cellid,varargin)
 
 %delanalysis(@LFP_method)
 
-%LFP cellbase 
+%cellbase -> LFP 
 %plotting the LFP - local field potential for the light pulse along with the experiment without the light pulse
+
 global f
 global CELLIDLIST
 %persistent dataOld

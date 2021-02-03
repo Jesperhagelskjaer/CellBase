@@ -8,6 +8,7 @@ function stdshade_sorting(amatrix,acolor,alpha,F,smth,factor,amatrix_SD)
 % - smth defines the smoothing factor (default is no smooth)
 % JH 2020/28/23
 
+%NB exist('acolor','var')==0 could be made in tilde exist
 if exist('acolor','var')==0 || isempty(acolor)
     acolor='r'; 
 end
@@ -28,9 +29,12 @@ if exist('factor','var')== 0 || isempty(factor)
     factor = 1; 
 end  
 
-if size(amatrix,2) == 1
+if size(amatrix,2) == 1 && ~isempty(amatrix_SD)
     amean = amatrix;
     astd  = amatrix_SD; % to get std shading
+elseif size(amatrix,2) == 1 && isempty(amatrix_SD)
+    amean = amatrix;
+    astd  = zeros(numel(amatrix),1); % to get std shading
 else
     amean = smooth(mean(amatrix,2),smth);
     astd  = std(amatrix,[],2)*factor; % to get std shading

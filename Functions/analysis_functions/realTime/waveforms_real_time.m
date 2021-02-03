@@ -7,13 +7,17 @@ function [varargout] = waveforms_real_time(cellid,varargin)
 
 %delanalysis(@waveforms_real_time)
 
+%plotting the real time-waveform from JSearch
+%Cellbase -> RT and LFP 
+
+
 global f
 global CELLIDLIST
 
 persistent dataF
 persistent POS_old
 
-method       = varargin{1};
+%method       = varargin{1};
 
 if (cellid == 0)
     varargin(1)  = [];
@@ -51,18 +55,17 @@ end
 idx        = findcellstr(CELLIDLIST',cellid); % CELLIDLIST must be column vector
 POS        = findcellpos('animal',r,'session',s);
 
-load_data = 1;
 if all(ismember(POS_old, POS)) && ~isempty(dataF)
     load_data = 0;
 end
 
-if POS(1) == idx || load_data  
+if POS(1) == idx || exist('load_data','var')  
     [dataF,Timestamps] = loading_and_preprocessing(r,s,'nrd');
 end
 
 getting_waveforms(cellid,dataF,Timestamps)
 
-varargout{1}.test   = 1;
+varargout{1}   = [];
 
 end
 

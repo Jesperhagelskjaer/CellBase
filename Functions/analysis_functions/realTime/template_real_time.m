@@ -1,17 +1,17 @@
 function [varargout] = template_real_time(cellid,varargin)
 
-%add_analysis(@template_real_time,1,'property_names',{'confusion','mahal_d','d_isolation'},'arglist',{});
+% 
 %add_analysis(@template_real_time,0,'property_names',{'confusion','mahal_d','d_isolation'},'arglist',{});
-%add_analysis(@template_real_time,0,'property_names',{'confusion','mahal_d','d_isolation'},'arglist',{'cells',[13]});
-%add_analysis(@template_real_time,1,'property_names',{});
+%add_analysis(@template_real_time,0,'property_names',{'confusion','mahal_d','d_isolation'},'arglist',{'cells',[23]});
+%add_analysis(@template_real_time,0,'property_names',{'confusion','mahal_d','d_isolation'});
 
 %delanalysis(@template_real_time)
 
+%comparing the Jsearch template with the closest dsort template in the cellbase
+%cellbase -> rt
+
 global f
 global CELLIDLIST
-
-persistent dataF
-persistent POS_old
 
 method       = varargin{1};
 
@@ -40,7 +40,9 @@ if (cellid == 0)
     addParameter(prs,'TT',3)              % number of template from Dsort to compare with Jsearch
     addParameter(prs,'spline',1)          %[0/1] spline the spikes    
     addParameter(prs,'purity',1)          %[0/1] look at the contamination for each cluster on each on
+    addParameter(prs,'purityAll',1)       %Looks at all the template where all = f.TT
     addParameter(prs,'shading',1)         %blot the shade
+    addParameter(prs,'std_plotting',1)     %the different waveform with
     parse(prs,varargin{:})
     
     f = prs.Results;
@@ -50,24 +52,16 @@ if (cellid == 0)
 end
 
 [r,s,~,~]  = cellid2tags(cellid);
-idx        = findcellstr(CELLIDLIST',cellid); % CELLIDLIST must be column vector
 POS        = findcellpos('animal',r,'session',s);
 
-if POS(1) == idx || all(size(dataOld) == 0) 
-    [dataF,~] = loading_and_preprocessing(r,s,'epysh');
+if POS(1) == findcellstr(CELLIDLIST',cellid) % CELLIDLIST must be column vector
+    [dataF,Timestamps] = loading_and_preprocessing(r,s,'nrd');
+    [confusion,NSSD,mahal_d, d_isolation]  = building_template_clustering(cellid,dataF,Timestamps);
 else
-    dataF      = dataOld;
+   [confusion,NSSD,mahal_d,d_isolation] = deal([]);
 end
 
-[confusion,NSSD,mahal_d,d_isolation] = deal({});
-if POS(1) == idx || load_data  
-    [dataF,Timestamps] = loading_and_preprocessing(r,s,'csc');
-end
-
-[confusion,NSSD,mahal_d, d_isolation]  = building_template_clustering(cellid,dataF,Timestamps);
     
-
-
 varargout{1}.confusion   = confusion;
 varargout{1}.NSSD        = NSSD;
 varargout{1}.mahal_d     = mahal_d;
