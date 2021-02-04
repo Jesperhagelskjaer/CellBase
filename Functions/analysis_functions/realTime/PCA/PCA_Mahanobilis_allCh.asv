@@ -46,6 +46,9 @@ if ~isempty(TTL) %used for real-time classification
                 stdshade_sorting(squeeze(ref(:,idx,:)),'b',[],[],[],[],[])
                 title(['ch - ', num2str(Chs(idx))])
                 xlabel('time');ylabel('Voltage')
+                if idx == numel(Chs)
+                    legend{'Main','r'}
+                end
             end
             h = findobj(gcf,'type','axes');
             for k = 1:numel(Chs)

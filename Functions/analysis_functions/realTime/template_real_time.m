@@ -1,7 +1,7 @@
 function [varargout] = template_real_time(cellid,varargin)
 
 % 
-%add_analysis(@template_real_time,0,'property_names',{'confusion','mahal_d','d_isolation'},'arglist',{});
+%add_analysis(@template_real_time,1,'property_names',{'confusion','mahal_d','d_isolation'},'arglist',{});
 %add_analysis(@template_real_time,0,'property_names',{'confusion','mahal_d','d_isolation'},'arglist',{'cells',[23]});
 %add_analysis(@template_real_time,0,'property_names',{'confusion','mahal_d','d_isolation'});
 
@@ -41,7 +41,6 @@ if (cellid == 0)
     addParameter(prs,'TT',3)              % number of template from Dsort to compare with Jsearch
     addParameter(prs,'spline',1)          %[0/1] spline the spikes    
     addParameter(prs,'purity',1)          %[0/1] look at the contamination for each cluster on each on
-    %addParameter(prs,'purityAll',1)       %Looks at all the template where all = f.TT
     addParameter(prs,'All',1)             %Looks at all the template where all = f.TT
     addParameter(prs,'shading',1)         %blot the shade
     addParameter(prs,'std_plotting',1)    %The different waveform with
@@ -58,7 +57,7 @@ POS        = findcellpos('animal',r,'session',s);
 
 if POS(1) == findcellstr(CELLIDLIST',cellid) % CELLIDLIST must be column vector
     [dataF,Timestamps] = loading_and_preprocessing(r,s,'nrd');
-    if f.purity || f.purityAll || f.All
+    if f.purity || f.All
         [Latent,Explained] = random_template_noise(dataF,100000,100);
     end
     [confusion,NSSD,mahal_d, d_isolation]  = building_template_clustering(cellid,dataF,Timestamps);
