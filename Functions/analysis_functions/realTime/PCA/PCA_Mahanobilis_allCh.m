@@ -14,14 +14,12 @@ function [mahal_d,d_isolation] = PCA_Mahanobilis_allCh(W_spikes_RT,W_spikes_on_a
 
 %the data is cell arrays (time x channel x trace)
 global f
-global Explained
-global Latent
 data         = W_spikes_on_a;
 data{end+1}  = W_spikes_RT;
 
 
 c = [];
-for cl = 1:size(data,2)
+for cl = 1:size(data,2) %used for color coling the spikes belonging to which neuorn
     c = [c; ones(size(data{cl},3),1)*cl];
 end
 
@@ -31,7 +29,7 @@ if f.purity
     end
 end
 
-if ~isempty(TTL)
+if ~isempty(TTL) %used for real-time classification
     if f.std_plotting 
         for i = 1:numel(data)-1
             Chs      = unique([chs_start{end},chs_start{i}]);
@@ -48,8 +46,6 @@ if ~isempty(TTL)
         end
     end
 end
-
-
 
 if f.purityAll || f.All
     [score]  = PCA_calculation('Templates PCA','all',data,[]);

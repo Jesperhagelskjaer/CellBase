@@ -41,10 +41,10 @@ if (cellid == 0)
     addParameter(prs,'TT',3)              % number of template from Dsort to compare with Jsearch
     addParameter(prs,'spline',1)          %[0/1] spline the spikes    
     addParameter(prs,'purity',1)          %[0/1] look at the contamination for each cluster on each on
-    addParameter(prs,'purityAll',1)       %Looks at all the template where all = f.TT
-    addParameter(prs,'All',1)       %Looks at all the template where all = f.TT
+    %addParameter(prs,'purityAll',1)       %Looks at all the template where all = f.TT
+    addParameter(prs,'All',1)             %Looks at all the template where all = f.TT
     addParameter(prs,'shading',1)         %blot the shade
-    addParameter(prs,'std_plotting',1)     %the different waveform with
+    addParameter(prs,'std_plotting',1)    %The different waveform with
     parse(prs,varargin{:})
     
     f = prs.Results;
@@ -65,7 +65,6 @@ if POS(1) == findcellstr(CELLIDLIST',cellid) % CELLIDLIST must be column vector
 else
    [confusion,NSSD,mahal_d,d_isolation] = deal([]);
 end
-
     
 varargout{1}.confusion   = confusion;
 varargout{1}.NSSD        = NSSD;
