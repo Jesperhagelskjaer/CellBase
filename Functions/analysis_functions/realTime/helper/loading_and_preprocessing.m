@@ -34,10 +34,9 @@ for ch = 0:31
     end    
     [d]            = filterButter(d);
     [d]            = bit2Volt(d,cor_V);
-    [d]            = invertSignal(d,f.invert);
+    [d]            = invertSignal(d);
     dataF(:,ch+1)  = single(d);  
 end
-
 if f.median_filter
     dataF = dataF - median(dataF,2);
 end

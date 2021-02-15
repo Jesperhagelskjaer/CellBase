@@ -1,4 +1,4 @@
-function [] = waveforms_LFP(r,s,dataF,Timestamps)
+function [area_diff,area_ratio] = waveforms_LFP(r,s,dataF,Timestamps)
 
 global f
 idx = 0;
@@ -18,12 +18,13 @@ Max   = max([template{1}(:);template{2}(:)])*1.1;
 Min   = min([template{1}(:);template{2}(:)])*1.1;
 MaxWS = max([wSpikes{1}(:);wSpikes{2}(:)])*1.1;
 MinWS = min([wSpikes{1}(:);wSpikes{2}(:)])*1.1;
-
+lgt = 1:numel(template{1}(:,1));
 for ch=1:32
     figure 
     hold on
     for i = 1:2
-        plot(squeeze(template{i}(:,ch)))    
+        plot(squeeze(template{i}(:,ch))) 
+        area(i,ch) = trapz(lgt, abs(template{i}(:,ch)));   
     end
     title(['ch - ',num2str(ch)])
     ylim([Min Max])
@@ -32,6 +33,7 @@ for ch=1:32
     else
         ylabel('Amplitude [bits]')
     end
+     
     xlabel('Time [Samples]')
     figure
     for i = 1:2
@@ -48,7 +50,10 @@ for ch=1:32
         end
     end
 end
-
+test = area-area(1,:);
+area_diff = mean(test(2,:));
+test = area/area(1,:);
+area_ratio = mean(test(2,:));
 
 end
 

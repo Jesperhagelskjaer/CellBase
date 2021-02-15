@@ -73,6 +73,8 @@ for m = 1:numel(data)
     for n = 1:size(data,2)
         mahal_d(m,n) = mahal(mean(score_h{m}),score_h{n}); %Compute the squared Euclidean distance of each observation in Y from the mean of X .
     end
+    mahal_vector(m) = mahal(mean(score_h{end}),score_h{n});
+    
     index1 = find(c == m);
     index2 = find(c ~= m);
     mahal_sorted = sort(mahal(score(index2,1:3),score(index1,1:3)));

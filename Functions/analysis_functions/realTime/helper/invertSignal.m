@@ -1,6 +1,8 @@
-function [d] = invertSignal(d,bool)
+function [d] = invertSignal(d)
 
-if bool
+global f
+
+if f.invert
     d = d * -1;
 end
 
