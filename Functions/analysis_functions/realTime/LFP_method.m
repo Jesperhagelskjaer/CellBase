@@ -1,7 +1,7 @@
 function [varargout] = LFP_method(cellid,varargin)
 
-%add_analysis(@LFP_method,1,'property_names',{'area_diff','area_ratio'},'arglist',{save,});
-%add_analysis(@LFP_method,0,'property_names',{'area'},'arglist',{});
+%add_analysis(@LFP_method,1,1,'property_names',{'area_diff','area_ratio'},'arglist',{});
+%add_analysis(@LFP_method,1,1,'property_names',{'area_diff'},'arglist',{});
 %add_analysis(@LFP_method,1,'property_names',{'save'},'arglist',{'cells',[2001:500]});
 %add_analysis(@LFP_method,1,'property_names',{});
 

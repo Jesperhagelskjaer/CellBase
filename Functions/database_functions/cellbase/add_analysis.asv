@@ -65,8 +65,7 @@ for cellnum = range %
         print_value(Lpropnames,holder,g)
     end
     if g.save
-        save(getpref('cellbase','fname'),'TheMatrix','-v7.3')
-    end
+        
 end
 
 % Feedback
