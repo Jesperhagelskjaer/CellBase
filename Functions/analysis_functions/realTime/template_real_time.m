@@ -14,6 +14,7 @@ global f
 global CELLIDLIST
 global Latent
 global Explained
+global method
 method       = varargin{1};
 
 if (cellid == 0)

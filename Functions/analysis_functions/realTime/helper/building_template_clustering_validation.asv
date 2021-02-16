@@ -24,6 +24,7 @@ elseif strcmp(f.comparison,'NCC')
 end
     
 W_Spikes_t        = W_Spikes(Idx); 
+[d_isolation,mahal_d] = deal([]);
 if any(strcmp(method,'mahal_d')) ||  any(strcmp(method,'d_isolation'))
     [mahal_d,d_isolation] = PCA_Mahanobilis_allCh(w_Spikes,W_Spikes_t,dataF,[]); 
 end

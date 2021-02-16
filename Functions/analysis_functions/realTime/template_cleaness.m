@@ -1,7 +1,7 @@
 function [varargout] = template_cleaness(cellid,varargin)
 
 
-%add_analysis(@template_cleaness,1,1,'property_names',{'mahal_d','d_isolation'},'arglist',{});
+%add_analysis(@template_cleaness,1,1,'property_names',{'score'},'arglist',{});
 %add_analysis(@template_cleaness,0,0,'property_names',{'mahal_d','d_isolation'},'arglist',{});
 %add_analysis(@template_cleaness,0,0,'property_names',{'mahal_d','d_isolation'},'arglist',{'cells',[18:21]});
 %add_analysis(@template_cleaness,1,0,'property_names',{});
@@ -9,14 +9,20 @@ function [varargout] = template_cleaness(cellid,varargin)
 %delanalysis(@template_cleaness)
 
 %cellbase -> dsort
+
+% score -> addParameter(prs,'comparison','NCC')
+
+
 global f
 global CELLIDLIST
 global Explained
 global Latent
 persistent dataF
+global method
 
+method       = varargin{1};
 if (cellid == 0)
-    method       = varargin{1};
+    
     varargin(1)  = [];
     varargin     = [varargin{:}];
     prs          = inputParser;
@@ -64,9 +70,9 @@ if POS(1) == idx || all(size(dataF) == 0)
     end
 end
 
-[NSSD,mahal_d,d_isolation] = building_template_clustering_validation(cellid,dataF);
+[score,mahal_d,d_isolation] = building_template_clustering_validation(cellid,dataF);
 
-varargout{1}.NSSD        = NSSD;
+varargout{1}.Score       = score;
 varargout{1}.mahal_d     = mahal_d;
 varargout{1}.d_isolation = d_isolation;
 close all
