@@ -5,7 +5,7 @@ close all
 path        = {'D:\vsMClust\MM002\2019-02-21_17-24-28';
                'D:\vsMClust\MM002\2019-02-21_17-24-28'};
 
-fname       = fullfile(path{1},'concat_session');
+fname       = fullfile(path{1},'concat_session.dat');
 timestampsE = {};
 Chs         = 32;
 for ch = 1:Chs    
