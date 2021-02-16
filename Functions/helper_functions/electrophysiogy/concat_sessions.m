@@ -2,7 +2,7 @@ clc
 clear all
 close all
 
-%[dataf, timestampsf, infof] = load_open_ephys_data_faster('D:\vsMClust\MM002\2019-02-21_17-24-28\100_CH1.continuous');
+[dataf, timestampsf, infof] = load_open_ephys_data_faster('D:\vsMClust\MM002\2019-02-21_17-24-28\100_CH1.continuous');
 path        = {'D:\vsMClust\MM002\2019-02-21_17-24-28';
                'D:\vsMClust\MM002\2019-02-21_17-24-28'};
 
@@ -25,20 +25,26 @@ for ch = 1:Chs
     
 end
 
+%% %saving the event matrix %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 extra = 0;
 event = [];
 for i_path = 1:numel(path) 
     event = [event; timestampsE{i_path}+extra];
     extra = extra + numel(data{1,i_path})/30000;
 end
-save(fullfile(path{1},'event.mat'),'event')
-%save the data
+save(fullfile(path{1},'cat_event.mat'),'event')
+
+%% saving the data the dat file %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 fidout      = fopen(fname, 'w');
 fwrite(fidout, data_cat, 'int16');   %Samples must in channel x time (as with openEphys)
 fclose(fidout);
 
 %%
+[dataf, timestampsf, infof] = load_open_ephys_data_faster('D:\vsMClust\MM002\2019-02-21_17-24-28\100_CH1.continuous');
+[data, timestamps, info]    = load_open_ephys_data('D:\vsMClust\MM002\2019-02-21_17-24-28\100_CH1.continuous'); 
+
+
 figure
 subplot(2,2,1)
 plot(data(1:100))
