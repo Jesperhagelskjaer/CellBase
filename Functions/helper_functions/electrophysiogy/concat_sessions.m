@@ -2,7 +2,6 @@ clc
 clear all
 close all
 
-[dataf, timestampsf, infof] = load_open_ephys_data_faster('D:\vsMClust\MM002\2019-02-21_17-24-28\100_CH1.continuous');
 path        = {'D:\vsMClust\MM002\2019-02-21_17-24-28';
                'D:\vsMClust\MM002\2019-02-21_17-24-28'};
 
