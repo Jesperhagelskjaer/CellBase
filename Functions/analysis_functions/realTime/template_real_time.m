@@ -1,9 +1,9 @@
 function [varargout] = template_real_time(cellid,varargin)
 
 % 
-%add_analysis(@template_real_time,1,'property_names',{'confusion','mahal_d','d_isolation'},'arglist',{});
-%add_analysis(@template_real_time,0,'property_names',{'confusion','mahal_d','d_isolation'},'arglist',{'cells',[23]});
-%add_analysis(@template_real_time,0,'property_names',{'confusion','mahal_d','d_isolation'});
+%add_analysis(@template_real_time,1,0,'property_names',{'confusion','mahal_d','d_isolation'},'arglist',{});
+%add_analysis(@template_real_time,0,0,'property_names',{'confusion','mahal_d','d_isolation'},'arglist',{});
+%add_analysis(@template_real_time,0,0,'property_names',{'confusion','mahal_d','d_isolation'});
 
 %delanalysis(@template_real_time)
 
@@ -35,6 +35,7 @@ if (cellid == 0)
     addParameter(prs,'xAxis',[-15 15])    % The range to cut for the template building
     addParameter(prs,'invert',0)          % Invert the electrical signal
     addParameter(prs,'PCA_cut',[-10 24])  % Cutting-range for the PCA
+    addParameter(prs,'comparison','NCC')  % Invert the electrical signal
     addParameter(prs,'alignment','min')   % Align each spike to the minimum amplitude
     addParameter(prs,'plotting',1)        % plot the data
     addParameter(prs,'median_filter',1)   % meadian filter used after butterwards filter 

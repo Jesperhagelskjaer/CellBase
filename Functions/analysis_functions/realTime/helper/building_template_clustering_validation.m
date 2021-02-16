@@ -15,8 +15,17 @@ template           = Templates(:,:,idx);
 w_Spikes           = W_Spikes{idx};
 Templates(:,:,idx) = [];
 W_Spikes(idx)      = [];
-
-[NSSD,Idx]        = norm_Sum_of_squred_diff(template,Templates); %(!use channels from The PCA analysis)
+if strcmp(f.comparison,'NSSD')
+    [NSSD,Idx]        = norm_Sum_of_squred_diff(template,Templates); %(!use channels from The PCA analysis)
+elseif strcmp(f.comparison,'NCC')
+    template = template(2:end-1,:);
+    for i = 1:size(Templates,3)
+        NCC_value(i) = max(normxcorr2_mex(template,Templates(:,:,i),'valid'));
+    end
+    [value, idx] = sort(NCC_value);
+    Idx          = idx(1:f.TT);    
+end
+    
 W_Spikes_t        = W_Spikes(Idx); 
     
 [mahal_d,d_isolation] = PCA_Mahanobilis_allCh(w_Spikes,W_Spikes_t,dataF,[]); 

@@ -1,9 +1,9 @@
 function [varargout] = LFP_method(cellid,varargin)
 
 %add_analysis(@LFP_method,1,1,'property_names',{'area_diff','area_ratio'},'arglist',{});
-%add_analysis(@LFP_method,1,1,'property_names',{'area_diff'},'arglist',{});
-%add_analysis(@LFP_method,1,'property_names',{'save'},'arglist',{'cells',[2001:500]});
-%add_analysis(@LFP_method,1,'property_names',{});
+%add_analysis(@LFP_method,0,0,'property_names',{'area_diff'},'arglist',{});
+%add_analysis(@LFP_method,1,1,'property_names',{'save'},'arglist',{'cells',[2001:500]});
+%add_analysis(@LFP_method,1,1,'property_names',{});
 
 %delanalysis(@LFP_method)
 
@@ -57,7 +57,7 @@ if POS(1) == findcellstr(CELLIDLIST',cellid) && s1(end) == 'a' % CELLIDLIST must
     
     [area_diff,area_ratio] = waveforms_LFP(r,s,dataF,timestamps);
 end
-varargout{1}.area_diff = area_diff;
+varargout{1}.area_diff  = area_diff;
 varargout{1}.area_ratio = area_ratio;
 close all
 end

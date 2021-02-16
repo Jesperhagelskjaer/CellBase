@@ -1,10 +1,10 @@
 function [varargout] = template_cleaness(cellid,varargin)
 
 
-%add_analysis(@template_cleaness,1,'property_names',{'mahal_d','d_isolation'},'arglist',{});
-%add_analysis(@template_cleaness,0,'property_names',{'mahal_d','d_isolation'},'arglist',{});
-%add_analysis(@template_cleaness,0,'property_names',{'mahal_d','d_isolation'},'arglist',{'cells',[18:21]});
-%add_analysis(@template_cleaness,1,'property_names',{});
+%add_analysis(@template_cleaness,1,1,'property_names',{'mahal_d','d_isolation'},'arglist',{});
+%add_analysis(@template_cleaness,0,0,'property_names',{'mahal_d','d_isolation'},'arglist',{});
+%add_analysis(@template_cleaness,0,0,'property_names',{'mahal_d','d_isolation'},'arglist',{'cells',[18:21]});
+%add_analysis(@template_cleaness,1,0,'property_names',{});
 
 %delanalysis(@template_cleaness)
 
@@ -33,6 +33,7 @@ if (cellid == 0)
     addParameter(prs,'useBitmVolt',1)       % converts from bits to volts
     addParameter(prs,'xAxis',[-15 15])      % The range to cut for the template building
     addParameter(prs,'invert',0)            % Invert the electrical signal
+    addParameter(prs,'comparison','NCC')   % Invert the electrical signal
     addParameter(prs,'PCA_cut',[-10 24])    % Cutting-range for the PCA
     addParameter(prs,'alignment','min')     % Align each spike to the minimum amplitude
     addParameter(prs,'plotting',1)          % plot the data
