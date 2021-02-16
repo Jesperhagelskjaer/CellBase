@@ -31,7 +31,7 @@ for i_path = 1:numel(path)
     event = [event; timestampsE{i_path}+extra];
     extra = extra + numel(data{1,i_path})/30000;
 end
-save(fullfile(path,'event.mat'),event)
+save(fullfile(path{1},'event.mat'),'event')
 %save the data
 
 fidout      = fopen(fname, 'w');
