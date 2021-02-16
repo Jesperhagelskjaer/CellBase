@@ -31,7 +31,7 @@ if (cellid == 0)
     addParameter(prs,'order',3) %         % the order of the filter
     addParameter(prs,'useBitmVolt',1)     % converts from bits to volts
     addParameter(prs,'TTL',[1 2])         % The TTL for the templates on the Neuralinks system
-    addParameter(prs,'shift',-16)         % Since the TTL trigger after the spike happened a shift is need so the axis center on the minimum deflection on the spike
+    addParameter(prs,'shift',-15)         % Since the TTL trigger after the spike happened a shift is need so the axis center on the minimum deflection on the spike
     addParameter(prs,'xAxis',[-15 15])    % The range to cut for the template building
     addParameter(prs,'invert',0)          % Invert the electrical signal
     addParameter(prs,'PCA_cut',[-10 24])  % Cutting-range for the PCA
@@ -65,7 +65,7 @@ if POS(1) == findcellstr(CELLIDLIST',cellid) % CELLIDLIST must be column vector
 end
     
 varargout{1}.confusion   = confusion;
-varargout{1}.score       = score;
+varargout{1}.NSSD        = score;
 varargout{1}.mahal_d     = mahal_d;
 varargout{1}.d_isolation = d_isolation;
 close all

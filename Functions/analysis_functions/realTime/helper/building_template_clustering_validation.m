@@ -1,4 +1,4 @@
-function [NSSD,mahal_d,d_isolation] = building_template_clustering_validation(cellid,dataF)
+function [value,mahal_d,d_isolation] = building_template_clustering_validation(cellid,dataF)
 
 global CELLIDLIST
 global f
@@ -15,15 +15,11 @@ template           = Templates(:,:,idx);
 w_Spikes           = W_Spikes{idx};
 Templates(:,:,idx) = [];
 W_Spikes(idx)      = [];
+
 if strcmp(f.comparison,'NSSD')
-    [NSSD,Idx]        = norm_Sum_of_squred_diff(template,Templates); %(!use channels from The PCA analysis)
+   [value,Idx]        = norm_Sum_of_squred_diff(template,Templates); %(!use channels from The PCA analysis)
 elseif strcmp(f.comparison,'NCC')
-    template = template(2:end-1,:);
-    for i = 1:size(Templates,3)
-        NCC_value(i) = max(normxcorr2_mex(template,Templates(:,:,i),'valid'));
-    end
-    [value, idx] = sort(NCC_value);
-    Idx          = idx(1:f.TT);    
+   [value,Idx] = norm_cross_correlation(template,Templates);
 end
     
 W_Spikes_t        = W_Spikes(Idx); 

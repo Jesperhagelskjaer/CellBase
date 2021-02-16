@@ -19,18 +19,10 @@ for j = TTL_value
     
     [wSpikes_RT,template,tSpikes_RT] = creating_templates_RT(dataF,Timestamps,TTLs_time,TTLs==j);
     
-    %[NSSD(:,j),idx]       = norm_Sum_of_squred_diff(template,Templates_on); %(!use channels from The PCA analysis)
-    
     if strcmp(f.comparison,'NSSD')
         [score(:,j),Idx]        = norm_Sum_of_squred_diff(template,Templates); %(!use channels from The PCA analysis)
     elseif strcmp(f.comparison,'NCC')
-    
-        template = template(2:end-1,:);
-        for i = 1:size(Templates,3)
-            score(:,j) = max(normxcorr2_mex(template,Templates(:,:,i),'valid'));
-        end
-        [score(:,j), idx] = sort(score(:,j));
-        Idx          = idx(1:f.TT);
+        [score(:,j),Idx] = norm_cross_correlation(template,Templates);
     end
     
     tSpikes_on_sim        = tSpikes_on(Idx); %taken out the spikes the match the NSSD calculation
