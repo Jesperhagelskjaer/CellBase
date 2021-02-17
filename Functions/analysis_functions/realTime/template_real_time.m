@@ -3,7 +3,7 @@ function [varargout] = template_real_time(cellid,varargin)
 % 
 %add_analysis(@template_real_time,1,0,'property_names',{'confusion','mahal_d','d_isolation'},'arglist',{});
 %add_analysis(@template_real_time,0,0,'property_names',{'confusion','mahal_d','d_isolation'},'arglist',{});
-%add_analysis(@template_real_time,0,0,'property_names',{'confusion','mahal_d','d_isolation'});
+%add_analysis(@template_real_time,0,0,'property_names',{'confusion','mahal_d','d_isolation'},'arglist',{});
 
 %delanalysis(@template_real_time)
 

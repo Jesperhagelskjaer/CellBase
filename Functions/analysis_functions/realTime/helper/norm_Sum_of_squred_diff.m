@@ -16,12 +16,15 @@ for i = 1:size(Templates,3)
         %top_t{i,j}(k) = top;
         
     end
-    NSSD(i) = min(minV);
+    NSSD(i,1) = min(minV);
+end
+result = [];
+if exist('f.TT','var')
+    [~, index] = sort(NSSD);
+    result     = index(1:f.TT);
+    plotting_templates(temp,Templates(:,:,result),'ref')
 end
 
-[~, index] = sort(NSSD);
-result     = index(1:f.TT);
 
-plotting_templates(temp,Templates(:,:,result),'ref')
 
 end

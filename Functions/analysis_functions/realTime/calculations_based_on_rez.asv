@@ -1,0 +1,48 @@
+function [varargout] = calculations_based_on_rez(cellid,varargin)
+
+%add_analysis(@calculations_based_on_rez,0,0,'property_names',{},'arglist',{});
+
+%delanalysis(@calculations_based_on_rez)
+global f
+global CELLIDLIST
+if (cellid == 0)
+    varargin(1)  = [];
+    varargin     = [varargin{:}];
+    prs          = inputParser;
+    
+    addParameter(prs,'path',getpref('cellbase').datapath,@ischar) %
+    addParameter(prs,'comparison',['NCC','NSSD'])  % Which method to compare [NCC/NSSD]
+    
+    parse(prs,varargin{:})
+    
+    f = prs.Results;
+    
+    varargout{1}.prs = prs;
+    return
+end
+
+
+
+
+
+idx = findcellstr(CELLIDLIST',cellid)
+
+[r,s,~,~]  = cellid2tags(cellid);
+
+load(fullfile(getpref('cellbase','datapath'),r,s,'rezfinal.mat'));
+
+
+
+if any(strcmp(f.comparison,'NSSD'))
+    [score(:,j),Idx]        = norm_Sum_of_squred_diff(template,Templates); %(!use channels from The PCA analysis)
+elseif any(strcmp(f.comparison,'NCC'))
+    [score(:,j),Idx] = norm_cross_correlation(template,Templates);
+end
+
+
+
+
+varargout{1}.test = 1;
+
+end
+
